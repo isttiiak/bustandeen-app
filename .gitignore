@@ -41,3 +41,46 @@ example
 # generated native folders
 /ios
 /android
+
+# >>> bustandeen-app local rules (added by bootstrap.sh) >>>
+
+# Local-only AI/dev context and planning (same convention as the web repo).
+# These stay on this machine; back them up as described in docs/12-REPO-GIT.md.
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+tasks/
+*.md
+!README.md
+!**/README.md
+!LICENSE.md
+!SECURITY.md
+!CONTRIBUTING.md
+!.github/**/*.md
+!assets/**/*.md
+!packages/core/**/*.md
+
+# Secrets: never commit.
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+google-services.json
+GoogleService-Info.plist
+*service-account*.json
+credentials.json
+
+# Generated native projects (Continuous Native Generation: expo prebuild).
+/android
+/ios
+
+# Downloaded media and local build output.
+*.apk
+*.aab
+*.ipa
+
+# <<< bustandeen-app local rules <<<

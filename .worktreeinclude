@@ -1,0 +1,9 @@
+# Gitignored files Claude Code copies into each new worktree (gitignore syntax).
+# Local-only guidance only. Never list a file that holds secrets (.env, keystores,
+# Firebase config files): a worktree must not pick those up.
+CLAUDE.md
+SETUP.md
+MASTER-PROMPT.md
+.claude/
+docs/
+tasks/
