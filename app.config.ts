@@ -34,6 +34,45 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     'expo-router',
+    // Fonts embedded at build time (decision D12). Sources and licences: assets/fonts/LICENSES/.
+    [
+      'expo-font',
+      {
+        android: {
+          fonts: [
+            {
+              fontFamily: 'Hind Siliguri',
+              fontDefinitions: [
+                { path: './assets/fonts/HindSiliguri-Regular.ttf', weight: 400 },
+                { path: './assets/fonts/HindSiliguri-Medium.ttf', weight: 500 },
+                { path: './assets/fonts/HindSiliguri-SemiBold.ttf', weight: 600 },
+                { path: './assets/fonts/HindSiliguri-Bold.ttf', weight: 700 },
+              ],
+            },
+            {
+              fontFamily: 'Plus Jakarta Sans',
+              path: './assets/fonts/PlusJakartaSans-Variable.ttf',
+              fontDefinitions: [{ weight: 400 }, { weight: 500 }, { weight: 600 }, { weight: 700 }],
+            },
+            {
+              fontFamily: 'El Messiri',
+              path: './assets/fonts/ElMessiri-Variable.ttf',
+              fontDefinitions: [{ weight: 400 }, { weight: 500 }, { weight: 600 }, { weight: 700 }],
+            },
+          ],
+        },
+        ios: {
+          fonts: [
+            './assets/fonts/HindSiliguri-Regular.ttf',
+            './assets/fonts/HindSiliguri-Medium.ttf',
+            './assets/fonts/HindSiliguri-SemiBold.ttf',
+            './assets/fonts/HindSiliguri-Bold.ttf',
+            './assets/fonts/PlusJakartaSans-Variable.ttf',
+            './assets/fonts/ElMessiri-Variable.ttf',
+          ],
+        },
+      },
+    ],
     [
       'expo-splash-screen',
       {
