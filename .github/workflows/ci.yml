@@ -44,6 +44,9 @@ jobs:
       - name: Test
         run: npm test
 
+      - name: No dev-only screens in the production bundle
+        run: npm run check:dev-routes
+
       # Non-blocking (P2-00): Expo doctor goes red whenever Expo ships an SDK patch, even on
       # unrelated PRs. Read its output; update Expo packages monthly (doc 12).
       - name: Expo doctor

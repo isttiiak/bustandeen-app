@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { resolveTheme } from '@/theme/resolve';
-import { tokens, tokenVars, type ThemeName } from '@/theme/tokens';
+import { appOnlyTokens, tokens, tokenVars, type ThemeName } from '@/theme/tokens';
 
 // The web repo is the source of truth for the colours. Locally it sits next to this repo; where it
 // is absent (CI today) the comparison is skipped, and P2-19 adds a checkout of it to CI.
@@ -36,6 +36,7 @@ function webChannels(css: string, theme: ThemeName): Record<string, string> {
       expect(Object.keys(web).length).toBeGreaterThan(20);
       for (const [name, vars] of Object.entries(tokenVars(theme))) {
         const key = name.replace('--c-', '');
+        if ((appOnlyTokens as readonly string[]).includes(key)) continue;
         expect({ name: key, value: vars }).toEqual({
           name: key,
           value: web[WEB_NAME[key] ?? key],

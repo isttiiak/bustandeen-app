@@ -33,12 +33,15 @@ interface ThemeValue {
   /** Plain colour string for native views and the status bar. Screens use NativeWind classes. */
   color: (name: ColorName) => string;
 }
-const ThemeContext = createContext<ThemeValue | null>(null);
+// Outside a provider (a unit test, a story) the dark theme applies instead of crashing.
+const ThemeContext = createContext<ThemeValue>({
+  theme: 'dark',
+  mode: 'system',
+  color: (name) => color('dark', name),
+});
 
 export function useTheme(): ThemeValue {
-  const value = useContext(ThemeContext);
-  if (!value) throw new Error('useTheme must be used inside ThemeProvider');
-  return value;
+  return useContext(ThemeContext);
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
