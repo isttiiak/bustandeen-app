@@ -55,6 +55,7 @@ tasks/
 !**/README.md
 !LICENSE.md
 !SECURITY.md
+!CHANGELOG.md
 !CONTRIBUTING.md
 !.github/**/*.md
 !assets/**/*.md
