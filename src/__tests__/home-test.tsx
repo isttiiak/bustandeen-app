@@ -124,7 +124,13 @@ describe('verse of the day', () => {
 describe('Home screen', () => {
   beforeEach(() => {
     setLang('en');
-    setProto({ layout: 'a', simMinutes: 13 * 60, fasting: true, active: true });
+    setProto({
+      layout: 'a',
+      frame: 'arch',
+      simMinutes: 13 * 60,
+      fasting: true,
+      active: true,
+    });
   });
 
   const renderHome = async () =>
@@ -178,6 +184,16 @@ describe('Home screen', () => {
     await fireEvent.press(asr);
     expect(screen.getByRole('checkbox', { name: 'Asr' })).toBeChecked();
     expect(screen.getByRole('progressbar', { name: 'Prayers today: 3/5' })).toBeOnTheScreen();
+  });
+
+  it('layout A: the timeline ticks a prayer and works in the plain frame too', async () => {
+    setProto({ frame: 'plain' });
+    await renderHome();
+    expect(screen.getByTestId('hero')).toBeOnTheScreen();
+    const asr = screen.getByRole('checkbox', { name: 'Asr' });
+    expect(asr).not.toBeChecked();
+    await fireEvent.press(asr);
+    expect(screen.getByRole('checkbox', { name: 'Asr' })).toBeChecked();
   });
 
   it('opens the full prayer times from the card', async () => {

@@ -6,14 +6,15 @@ import Animated from 'react-native-reanimated';
 import { setLang, useLang, type Lang } from '@/features/settings/langStore';
 import { setThemeMode } from '@/theme/ThemeProvider';
 import { themeModes, type ThemeMode } from '@/theme/resolve';
-import { ArchHero } from '@/ui/Art';
 import { Chip } from '@/ui/Inputs';
 import { useEntering } from '@/ui/motion';
 import { useToast } from '@/ui/Overlays';
 import { Screen } from '@/ui/Screen';
 import { Text } from '@/ui/Text';
 
+import { HeroFrame } from '../components/HeroFrame';
 import { ArchInfo } from '../components/HeroParts';
+import { PrayerTimeline } from '../components/PrayerTimeline';
 import { CounterValue, QuickCard, TrackerValue } from '../components/QuickCards';
 import { FastingSheet, TimesSheet, TrackerSheet, ZikrSheet } from '../components/Sheets';
 import { SkyHero } from '../components/SkyHero';
@@ -22,7 +23,7 @@ import { copyFor, digits, fill } from '../copy';
 import { heroInfo } from '../heroInfo';
 import { useNow } from '../hooks';
 import { applySim, setProto, useProto } from '../proto';
-import { SAMPLE_DAY, type PrayerId } from '../schedule';
+import { dayState, SAMPLE_DAY, type PrayerId } from '../schedule';
 import { verseOfDay } from '../verses';
 
 function Block({ index, children }: { index: number; children: ReactNode }) {
@@ -66,6 +67,11 @@ function HomeBody({ active }: { active: boolean }) {
   const info = useMemo(() => heroInfo(now, c, lang, proto.fasting), [now, c, lang, proto.fasting]);
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
   const tracked = SAMPLE_DAY.filter((p) => p.tracked);
+  const state = dayState(now);
+  const window = state.kind === 'prayer' ? { start: state.start, end: state.end } : null;
+  // The latest prayer whose time has started, so the timeline keeps a "you are here" through a
+  // forbidden time or a gap (null before Fajr).
+  const startedId = [...tracked].reverse().find((p) => p.minutes <= nowMinutes)?.id ?? null;
   const doneCount = tracked.filter((p) => done[p.id]).length;
   const names = {
     fajr: c.fajr,
@@ -107,22 +113,29 @@ function HomeBody({ active }: { active: boolean }) {
       </Block>
 
       <Block index={1}>
-        {proto.layout === 'a' ? (
-          <ArchHero testID="hero">
-            <ArchInfo info={info} c={c} />
-          </ArchHero>
-        ) : (
-          <View testID="hero">
+        <HeroFrame frame={proto.frame}>
+          {proto.layout === 'a' ? (
+            <ArchInfo info={info} c={c}>
+              <PrayerTimeline
+                nowMinutes={nowMinutes}
+                currentId={startedId}
+                done={done}
+                names={names}
+                onToggle={toggle}
+              />
+            </ArchInfo>
+          ) : (
             <SkyHero
               info={info}
               c={c}
               nowMinutes={nowMinutes}
+              window={window}
               done={done}
               names={names}
               onToggle={toggle}
             />
-          </View>
-        )}
+          )}
+        </HeroFrame>
       </Block>
 
       <Block index={2}>
@@ -261,6 +274,7 @@ function useProtoLink() {
   const p = useLocalSearchParams<{
     theme?: string;
     layout?: string;
+    frame?: string;
     t?: string;
     fast?: string;
     active?: string;
@@ -274,11 +288,12 @@ function useProtoLink() {
     if (p.lang === 'en' || p.lang === 'bn') setLang(p.lang);
     setProto({
       ...(p.layout === 'a' || p.layout === 'b' ? { layout: p.layout } : null),
+      ...(p.frame === 'arch' || p.frame === 'plain' ? { frame: p.frame } : null),
       ...(p.t ? { simMinutes: p.t === 'live' ? null : Number(p.t) } : null),
       ...(p.fast ? { fasting: p.fast === '1' } : null),
       ...(p.active ? { active: p.active === '1' } : null),
     });
-  }, [p.theme, p.layout, p.t, p.fast, p.active, p.lang]);
+  }, [p.theme, p.layout, p.frame, p.t, p.fast, p.active, p.lang]);
 }
 
 export function HomeScreen() {

@@ -25,7 +25,7 @@ export const textVariants = [
 export type TextVariant = (typeof textVariants)[number];
 
 export type TextTone =
-  'ink' | 'muted' | 'faint' | 'gold' | 'emerald' | 'danger' | 'onColor' | 'hero';
+  'ink' | 'muted' | 'faint' | 'gold' | 'emerald' | 'danger' | 'onColor' | 'hero' | 'heroGold';
 export type TextWeight = 'regular' | 'medium' | 'semibold' | 'bold';
 export type TextScript = 'latin' | 'bangla';
 
@@ -67,6 +67,8 @@ const toneClass: Record<TextTone, string> = {
   onColor: 'text-on-color',
   /** Text on the hero card: it has its own ink because the hero is light in the mixed theme. */
   hero: 'text-hero-ink',
+  /** Gold on the hero card (the page gold can be too dark or too light there). */
+  heroGold: 'text-hero-gold',
 };
 
 const weightValue: Record<TextWeight, TextStyle['fontWeight']> = {

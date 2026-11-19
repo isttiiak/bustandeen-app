@@ -5,7 +5,7 @@
 
 /** Tokens that exist only in the app (no `--c-*` twin on the web): `on-color` is always-white text on
  *  a solid coloured fill (doc 06 section 1). The web-equality test skips these. */
-export const appOnlyTokens = ['on-color', 'hero-ink'] as const;
+export const appOnlyTokens = ['on-color', 'hero-ink', 'hero-gold', 'hero-danger'] as const;
 
 export type Rgb = readonly [number, number, number];
 
@@ -47,6 +47,8 @@ const dark = {
   'reader-note': [216, 208, 184],
   'on-color': [255, 255, 255],
   'hero-ink': [255, 255, 255],
+  'hero-gold': [226, 190, 120],
+  'hero-danger': [250, 150, 140],
 } as const satisfies Record<string, Rgb>;
 
 export type ColorName = keyof typeof dark;
@@ -84,6 +86,8 @@ const light: Record<ColorName, Rgb> = {
   'reader-note': [60, 66, 50],
   'on-color': [255, 255, 255],
   'hero-ink': [31, 36, 24],
+  'hero-gold': [122, 88, 12],
+  'hero-danger': [168, 30, 24],
 };
 
 // Night (app-only): the dark-first theme. Near-black midnight with a blue undertone (OLED friendly),
@@ -121,6 +125,8 @@ const night: Record<ColorName, Rgb> = {
   'reader-note': [204, 214, 226],
   'on-color': [255, 255, 255],
   'hero-ink': [233, 240, 248],
+  'hero-gold': [242, 205, 126],
+  'hero-danger': [250, 140, 130],
 };
 
 // Sand (app-only): the warm theme with little white. Page and cards are sand and parchment tones,
@@ -158,6 +164,8 @@ const sand: Record<ColorName, Rgb> = {
   'reader-note': [86, 62, 40],
   'on-color': [255, 255, 255],
   'hero-ink': [255, 241, 216],
+  'hero-gold': [250, 214, 128],
+  'hero-danger': [255, 165, 150],
 };
 
 export const tokens: Record<ThemeName, Record<ColorName, Rgb>> = { dark, light, night, sand };

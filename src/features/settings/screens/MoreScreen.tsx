@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 
 import { copyFor } from '@/features/home/copy';
-import { setProto, useProto, type HomeLayout } from '@/features/home/proto';
+import { setProto, useProto, type HeroFrameKind, type HomeLayout } from '@/features/home/proto';
 import { setThemeMode, useThemeMode } from '@/theme/ThemeProvider';
 import type { ThemeMode } from '@/theme/resolve';
 import { color, type ThemeName } from '@/theme/tokens';
@@ -103,6 +103,15 @@ export function MoreScreen() {
           );
         })}
       </View>
+      <SectionTitle>{c.protoFrame}</SectionTitle>
+      <Segmented
+        options={[
+          { value: 'arch', label: c.frameArch },
+          { value: 'plain', label: c.framePlain },
+        ]}
+        value={proto.frame}
+        onChange={(v: HeroFrameKind) => setProto({ frame: v })}
+      />
       <SectionTitle>{c.language}</SectionTitle>
       <Segmented
         options={[

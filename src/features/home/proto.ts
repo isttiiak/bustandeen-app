@@ -4,8 +4,11 @@ import { useSyncExternalStore } from 'react';
 // A or B, a pretend time of day, fasting on or off, and active or empty progress. In memory, never
 // saved or synced. Deleted when the design is approved and real data lands (P3).
 export type HomeLayout = 'a' | 'b';
+export type HeroFrameKind = 'arch' | 'plain';
 export interface Proto {
   layout: HomeLayout;
+  /** The shape around the hero: the arch, or a plain rounded card. */
+  frame: HeroFrameKind;
   /** Minutes after midnight to pretend it is, or null for the real clock. */
   simMinutes: number | null;
   fasting: boolean;
@@ -17,6 +20,7 @@ export interface Proto {
 
 let state: Proto = {
   layout: 'a',
+  frame: 'arch',
   simMinutes: 13 * 60,
   fasting: true,
   active: true,

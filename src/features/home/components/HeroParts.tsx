@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { View } from 'react-native';
 
 import { Icon } from '@/ui/Icon';
@@ -52,7 +53,16 @@ export function NextFastRow({ info, c }: { info: HeroInfo; c: Copy }) {
 }
 
 /** Layout A: everything inside the arch. */
-export function ArchInfo({ info, c }: { info: HeroInfo; c: Copy }) {
+export function ArchInfo({
+  info,
+  c,
+  children,
+}: {
+  info: HeroInfo;
+  c: Copy;
+  /** The prayer timeline, drawn between the countdown and the next/iftar row. */
+  children?: ReactNode;
+}) {
   const wide = info.kind === 'prayer';
   return (
     <View className="items-center gap-1" accessible accessibilityLabel={info.spoken}>
@@ -71,14 +81,7 @@ export function ArchInfo({ info, c }: { info: HeroInfo; c: Copy }) {
           {info.countdown}
         </Text>
       </View>
-      {info.progress != null ? (
-        <View className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-hero-ink/15">
-          <View
-            className="h-full rounded-full bg-hero-ink"
-            style={{ width: `${Math.round(info.progress * 100)}%` }}
-          />
-        </View>
-      ) : null}
+      {children}
       <NextFastRow info={info} c={c} />
     </View>
   );

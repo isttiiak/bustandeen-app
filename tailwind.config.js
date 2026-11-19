@@ -34,6 +34,8 @@ const names = [
   'reader-note',
   'on-color',
   'hero-ink',
+  'hero-gold',
+  'hero-danger',
 ];
 
 /** @type {import('tailwindcss').Config} */

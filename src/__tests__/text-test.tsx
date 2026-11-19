@@ -127,6 +127,8 @@ describe('text tone contrast', () => {
     it(`${theme}: hero text, and white on the solid primary fill`, () => {
       expect(contrast(t['hero-ink'], t.hero)).toBeGreaterThanOrEqual(4.5);
       expect(contrast(blend(t['hero-ink'], t.hero, 0.7), t.hero)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(t['hero-gold'], t.hero)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(t['hero-danger'], t.hero)).toBeGreaterThanOrEqual(3);
       expect(contrast(t['on-color'], t['emerald-dim'])).toBeGreaterThanOrEqual(4.5);
     });
   }
