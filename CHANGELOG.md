@@ -9,6 +9,15 @@ The app is not released: these are development milestones, not builds for users.
 
 ## [Unreleased]
 
+## [1.0.0-alpha.2] - 2026-11-20
+
+Core version shipped: none yet.
+
+### Added
+
+- i18n: English and Bangla through i18next, strings in `src/locales` (86 strings, 25 shared with the website's
+  keys), live language switch, the phone language as the default, `npm run i18n:check` in CI (P2-06, D17).
+
 ## [1.0.0-alpha.1] - 2026-11-20
 
 Core version shipped: none yet (`packages/core` is not synced; prayer data on Home is sample data).
