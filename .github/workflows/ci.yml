@@ -44,6 +44,9 @@ jobs:
       - name: Test
         run: npm test
 
+      - name: Migration bundle matches the SQL
+        run: npm run db:check
+
       - name: No dev-only screens in the production bundle
         run: npm run check:dev-routes
 

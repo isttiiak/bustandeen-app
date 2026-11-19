@@ -31,16 +31,26 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     // Predictive back is the default for apps targeting API 36 (doc 06).
     predictiveBackGestureEnabled: true,
+    // The encrypted DB, MMKV files and the SecureStore key must not leave the phone through Auto Backup
+    // or device transfer (doc 04 section 13, D16). The server is the backup.
+    allowBackup: false,
     // Prebuild adds these to the main manifest, so release builds would request them (D11).
     // Storage is on doc 05's "never requested" list; the overlay permission is only for the dev menu.
     blockedPermissions: [
       'android.permission.READ_EXTERNAL_STORAGE',
       'android.permission.WRITE_EXTERNAL_STORAGE',
       'android.permission.SYSTEM_ALERT_WINDOW',
+      // Added by expo-secure-store for its optional biometric prompt; the app does not use it (D16).
+      // Remove from this list when an app lock arrives.
+      'android.permission.USE_BIOMETRIC',
+      'android.permission.USE_FINGERPRINT',
     ],
   },
   plugins: [
     'expo-router',
+    'expo-secure-store',
+    // SQLCipher build: without `useSQLCipher` PRAGMA key does nothing and raises no error (doc 05).
+    ['expo-sqlite', { useSQLCipher: true }],
     // Fonts embedded at build time (decision D12). Sources and licences: assets/fonts/LICENSES/.
     [
       'expo-font',
