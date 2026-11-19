@@ -83,9 +83,17 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-splash-screen',
       {
-        backgroundColor: '#208AEF',
+        // Splash background = the theme's `void` token in each theme, so there is no colour flash
+        // when the app draws its first frame (task P2-02). Literals because Expo's config loader
+        // cannot import src/theme/tokens.ts; a test keeps them equal to the tokens. The artwork is
+        // still the template's (P2 assets).
+        backgroundColor: '#EDEFE2',
         image: './assets/images/splash-icon.png',
         imageWidth: 76,
+        dark: {
+          backgroundColor: '#0E0D0A',
+          image: './assets/images/splash-icon.png',
+        },
       },
     ],
   ],

@@ -1,5 +1,6 @@
 import type { ConfigContext } from 'expo/config';
 
+import { hex } from '@/theme/tokens';
 import appConfig, { APP_ID, APP_SCHEME } from '../../app.config';
 
 // The store identity can never change after the first release (decision O13).
@@ -32,5 +33,15 @@ describe('app identity', () => {
         'android.permission.SYSTEM_ALERT_WINDOW',
       ])
     );
+  });
+
+  it('paints the splash with the theme void colour in both themes', () => {
+    const splash = config.plugins?.find((p) => Array.isArray(p) && p[0] === 'expo-splash-screen');
+    const options = (Array.isArray(splash) ? splash[1] : {}) as {
+      backgroundColor: string;
+      dark: { backgroundColor: string };
+    };
+    expect(options.backgroundColor).toBe(hex('light', 'void'));
+    expect(options.dark.backgroundColor).toBe(hex('dark', 'void'));
   });
 });
