@@ -19,7 +19,7 @@ export interface Proto {
 }
 
 let state: Proto = {
-  layout: 'a',
+  layout: 'b',
   frame: 'arch',
   simMinutes: 13 * 60,
   fasting: true,
