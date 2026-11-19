@@ -88,8 +88,8 @@ const modes: readonly { value: ThemeMode; label: string }[] = [
   { value: 'dark', label: 'Dark' },
   { value: 'light', label: 'Light' },
   { value: 'daylight', label: 'Daylight' },
-  { value: 'warm', label: 'Warm' },
-  { value: 'mixed', label: 'Mixed' },
+  { value: 'night', label: 'Night' },
+  { value: 'sand', label: 'Sand' },
 ];
 
 export function Gallery() {

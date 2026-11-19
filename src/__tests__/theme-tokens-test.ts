@@ -65,8 +65,8 @@ describe('resolveTheme', () => {
   });
 
   it('app-only modes resolve to their own themes', () => {
-    expect(resolveTheme('warm', { systemScheme: 'dark' })).toBe('warm');
-    expect(resolveTheme('mixed', { systemScheme: 'light' })).toBe('mixed');
+    expect(resolveTheme('night', { systemScheme: 'light' })).toBe('night');
+    expect(resolveTheme('sand', { systemScheme: 'dark' })).toBe('sand');
   });
 
   it('honours an explicit mode', () => {

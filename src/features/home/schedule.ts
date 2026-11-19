@@ -66,3 +66,85 @@ export function formatCountdown(ms: number): string {
   const s = total % 60;
   return [h, m, s].map((n) => String(n).padStart(2, '0')).join(':');
 }
+
+// ---- Current state of the day (prototype, SAMPLE rules) ---------------------------------------
+// Forbidden windows and prayer end times below are placeholders so the Home hero can show every
+// state. Real windows come from `@bustandeen/core` in Phase 3 and need a rule source and a test
+// (docs/08). Do not reuse these numbers.
+
+export type ForbiddenReason = 'sunrise' | 'zenith' | 'sunset';
+
+/** Sample windows in minutes after midnight: [start, end, reason]. */
+export const SAMPLE_FORBIDDEN: readonly [number, number, ForbiddenReason][] = [
+  [6 * 60 + 20, 6 * 60 + 35, 'sunrise'],
+  [11 * 60 + 46, 11 * 60 + 52, 'zenith'],
+  [17 * 60 + 11, 17 * 60 + 26, 'sunset'],
+];
+
+export type DayState =
+  | {
+      kind: 'prayer';
+      id: PrayerId;
+      start: number;
+      end: number;
+      /** ms until this prayer's time ends. */
+      msLeft: number;
+      /** 0 to 1 through the window. */
+      elapsed: number;
+    }
+  | { kind: 'forbidden'; reason: ForbiddenReason; start: number; end: number; msLeft: number }
+  | { kind: 'between'; end: number; msLeft: number };
+
+const DAY = 24 * 60;
+
+/** Where `now` sits: inside a forbidden window, inside a prayer's time, or between two prayers. */
+export function dayState(now: Date, day: readonly SamplePrayer[] = SAMPLE_DAY): DayState {
+  const m = minutesOfDay(now);
+  const at = (id: PrayerId) => day.find((p) => p.id === id)!.minutes;
+  for (const [start, end, reason] of SAMPLE_FORBIDDEN) {
+    if (m >= start && m < end)
+      return { kind: 'forbidden', reason, start, end, msLeft: (end - m) * 60000 };
+  }
+  // Prayer windows: each runs until the next prayer (Fajr until sunrise, Isha until the next Fajr).
+  const windows: [PrayerId, number, number][] = [
+    ['fajr', at('fajr'), at('sunrise')],
+    ['dhuhr', at('dhuhr'), at('asr')],
+    ['asr', at('asr'), at('maghrib')],
+    ['maghrib', at('maghrib'), at('isha')],
+    ['isha', at('isha'), at('fajr') + DAY],
+    ['isha', at('isha') - DAY, at('fajr')],
+  ];
+  for (const [id, start, end] of windows) {
+    if (m >= start && m < end) {
+      return {
+        kind: 'prayer',
+        id,
+        start,
+        end,
+        msLeft: (end - m) * 60000,
+        elapsed: (m - start) / (end - start),
+      };
+    }
+  }
+  return { kind: 'between', end: at('dhuhr'), msLeft: (at('dhuhr') - m) * 60000 };
+}
+
+export interface FastingMark {
+  kind: 'suhoor' | 'iftar';
+  /** Minutes after midnight of the event (Fajr for suhoor, Maghrib for iftar). */
+  at: number;
+  msLeft: number;
+}
+
+/** Suhoor ends at Fajr, the fast ends at Maghrib; nothing after Maghrib. */
+export function fastingMark(
+  now: Date,
+  day: readonly SamplePrayer[] = SAMPLE_DAY
+): FastingMark | null {
+  const m = minutesOfDay(now);
+  const fajr = day.find((p) => p.id === 'fajr')!.minutes;
+  const maghrib = day.find((p) => p.id === 'maghrib')!.minutes;
+  if (m < fajr) return { kind: 'suhoor', at: fajr, msLeft: (fajr - m) * 60000 };
+  if (m < maghrib) return { kind: 'iftar', at: maghrib, msLeft: (maghrib - m) * 60000 };
+  return null;
+}

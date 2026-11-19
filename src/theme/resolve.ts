@@ -3,9 +3,9 @@
 
 import type { ThemeName } from './tokens';
 
-// `warm` and `mixed` are app-only modes (decision O22). When preference sync lands (P2-14) they must
+// `night` and `sand` are app-only modes (decision O22). When preference sync lands (P2-14) they must
 // not be written to the web's `bustandeen_theme_mode`, which only knows the first four.
-export const themeModes = ['system', 'dark', 'light', 'daylight', 'warm', 'mixed'] as const;
+export const themeModes = ['system', 'dark', 'light', 'daylight', 'night', 'sand'] as const;
 export type ThemeMode = (typeof themeModes)[number];
 
 /** Web preference key; stored and synced under the same name once storage exists (P2-07, P2-14). */
@@ -34,10 +34,10 @@ export function resolveTheme(
   switch (mode) {
     case 'light':
       return 'light';
-    case 'warm':
-      return 'warm';
-    case 'mixed':
-      return 'mixed';
+    case 'night':
+      return 'night';
+    case 'sand':
+      return 'sand';
     case 'system':
       return opts.systemScheme === 'light' ? 'light' : 'dark';
     case 'daylight':

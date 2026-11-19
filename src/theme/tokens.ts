@@ -9,7 +9,7 @@ export const appOnlyTokens = ['on-color', 'hero-ink'] as const;
 
 export type Rgb = readonly [number, number, number];
 
-export const themeNames = ['dark', 'light', 'warm', 'mixed'] as const;
+export const themeNames = ['dark', 'light', 'night', 'sand'] as const;
 /** The two themes the web has; the rest are app-only palettes (doc 06 section 0, decision O22). */
 export const webThemeNames = ['dark', 'light'] as const;
 export type ThemeName = (typeof themeNames)[number];
@@ -86,84 +86,84 @@ const light: Record<ColorName, Rgb> = {
   'hero-ink': [31, 36, 24],
 };
 
-// Warm light (app-only): cream paper, brown ink, olive and gold kept from the brand. Contrast is
-// checked for every text and accent pair by src/__tests__/text-test.tsx.
-const warm: Record<ColorName, Rgb> = {
-  void: [250, 243, 230],
-  'void-deep': [245, 236, 220],
-  deep: [255, 251, 243],
-  surface: [240, 229, 208],
-  border: [222, 206, 176],
-  hero: [243, 224, 186],
-  emerald: [60, 92, 50],
-  'emerald-dim': [64, 98, 54],
-  gold: [130, 88, 20],
-  'gold-dim': [112, 76, 16],
-  warm: [150, 72, 34],
-  'warm-dim': [128, 60, 28],
-  info: [34, 96, 86],
-  'info-dim': [30, 84, 76],
-  pink: [140, 56, 92],
-  'pink-dim': [120, 48, 80],
-  ink: [43, 33, 22],
-  shade: [140, 120, 90],
-  'danger-soft': [160, 30, 30],
-  danger: [176, 36, 28],
-  'data-good': [80, 140, 64],
-  'data-mid': [214, 160, 40],
-  'data-low': [206, 108, 50],
-  'data-none': [200, 56, 44],
-  'reader-from': [252, 247, 236],
-  'reader-via': [248, 241, 226],
-  'reader-to': [242, 232, 212],
-  'reader-text': [43, 33, 22],
-  'reader-soft': [78, 66, 50],
-  'reader-note': [78, 66, 50],
-  'on-color': [255, 255, 255],
-  'hero-ink': [43, 33, 22],
-};
-
-// Mixed (app-only): a dark page with warm cream ink and a warm-light hero card (text on it uses
-// `hero-ink`). Accents are lifted so they read on the dark surfaces.
-const mixed: Record<ColorName, Rgb> = {
-  void: [20, 17, 12],
-  'void-deep': [26, 22, 16],
-  deep: [36, 31, 22],
-  surface: [46, 40, 29],
-  border: [78, 66, 46],
-  hero: [241, 226, 196],
-  emerald: [140, 176, 112],
-  'emerald-dim': [82, 114, 66],
-  gold: [222, 186, 118],
-  'gold-dim': [176, 146, 88],
-  warm: [224, 150, 100],
-  'warm-dim': [182, 116, 72],
-  info: [110, 176, 160],
-  'info-dim': [84, 142, 130],
-  pink: [224, 146, 172],
-  'pink-dim': [186, 116, 142],
-  ink: [250, 240, 222],
+// Night (app-only): the dark-first theme. Near-black midnight with a blue undertone (OLED friendly),
+// a deep teal hero and luminous mint and gold accents. Text on the hero is the page ink.
+const night: Record<ColorName, Rgb> = {
+  void: [4, 7, 12],
+  'void-deep': [8, 12, 20],
+  deep: [13, 19, 31],
+  surface: [21, 30, 47],
+  border: [36, 50, 74],
+  hero: [11, 40, 46],
+  emerald: [98, 218, 170],
+  'emerald-dim': [30, 120, 92],
+  gold: [242, 205, 126],
+  'gold-dim': [192, 158, 88],
+  warm: [244, 156, 110],
+  'warm-dim': [196, 124, 84],
+  info: [116, 194, 234],
+  'info-dim': [86, 154, 192],
+  pink: [238, 150, 188],
+  'pink-dim': [196, 120, 154],
+  ink: [233, 240, 248],
   shade: [0, 0, 0],
-  'danger-soft': [252, 176, 164],
-  danger: [248, 128, 112],
-  'data-good': [140, 176, 112],
-  'data-mid': [222, 186, 118],
-  'data-low': [224, 150, 100],
-  'data-none': [248, 128, 112],
-  'reader-from': [18, 26, 20],
-  'reader-via': [14, 20, 16],
-  'reader-to': [16, 20, 30],
-  'reader-text': [236, 228, 208],
-  'reader-soft': [214, 206, 188],
-  'reader-note': [216, 208, 184],
+  'danger-soft': [252, 176, 176],
+  danger: [250, 122, 122],
+  'data-good': [98, 218, 170],
+  'data-mid': [242, 205, 126],
+  'data-low': [244, 156, 110],
+  'data-none': [250, 122, 122],
+  'reader-from': [6, 16, 22],
+  'reader-via': [5, 12, 18],
+  'reader-to': [8, 12, 26],
+  'reader-text': [226, 234, 242],
+  'reader-soft': [200, 210, 222],
+  'reader-note': [204, 214, 226],
   'on-color': [255, 255, 255],
-  'hero-ink': [43, 33, 22],
+  'hero-ink': [233, 240, 248],
 };
 
-export const tokens: Record<ThemeName, Record<ColorName, Rgb>> = { dark, light, warm, mixed };
+// Sand (app-only): the warm theme with little white. Page and cards are sand and parchment tones,
+// the hero is a deep clay with cream text. Pure white never appears except `on-color`.
+const sand: Record<ColorName, Rgb> = {
+  void: [232, 211, 176],
+  'void-deep': [226, 203, 165],
+  deep: [243, 227, 197],
+  surface: [224, 202, 166],
+  border: [188, 158, 114],
+  hero: [104, 54, 32],
+  emerald: [48, 80, 40],
+  'emerald-dim': [52, 86, 44],
+  gold: [110, 70, 8],
+  'gold-dim': [96, 60, 6],
+  warm: [138, 58, 24],
+  'warm-dim': [120, 50, 20],
+  info: [24, 84, 74],
+  'info-dim': [20, 72, 64],
+  pink: [128, 46, 80],
+  'pink-dim': [112, 40, 70],
+  ink: [34, 20, 10],
+  shade: [90, 64, 36],
+  'danger-soft': [150, 26, 22],
+  danger: [168, 30, 24],
+  'data-good': [70, 124, 56],
+  'data-mid': [196, 140, 30],
+  'data-low': [196, 98, 44],
+  'data-none': [190, 50, 40],
+  'reader-from': [236, 216, 182],
+  'reader-via': [230, 208, 172],
+  'reader-to': [222, 198, 160],
+  'reader-text': [34, 20, 10],
+  'reader-soft': [86, 62, 40],
+  'reader-note': [86, 62, 40],
+  'on-color': [255, 255, 255],
+  'hero-ink': [255, 241, 216],
+};
+
+export const tokens: Record<ThemeName, Record<ColorName, Rgb>> = { dark, light, night, sand };
 
 /** True for themes with a light page (status bar icons go dark). */
-export const isLightTheme = (theme: ThemeName): boolean => theme === 'light' || theme === 'warm';
+export const isLightTheme = (theme: ThemeName): boolean => theme === 'light' || theme === 'sand';
 
 /** `rgb(...)` string for places that need a plain colour (status bar, native views). */
 export function color(theme: ThemeName, name: ColorName): string {

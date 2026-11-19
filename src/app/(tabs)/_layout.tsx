@@ -9,7 +9,7 @@ const ICONS: Record<string, IconName> = {
   index: 'home',
   salat: 'clock',
   quran: 'book',
-  zikr: 'counter',
+  events: 'sun',
   more: 'dots',
 };
 
@@ -20,10 +20,10 @@ export default function TabsLayout() {
       tabBar={(props) => <TabBar {...props} icons={ICONS} />}
       screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'transparent' } }}
     >
-      <Tabs.Screen name="index" options={{ title: c.tabToday }} />
+      <Tabs.Screen name="index" options={{ title: c.tabHome }} />
       <Tabs.Screen name="salat" options={{ title: c.tabSalat }} />
       <Tabs.Screen name="quran" options={{ title: c.tabQuran }} />
-      <Tabs.Screen name="zikr" options={{ title: c.tabZikr }} />
+      <Tabs.Screen name="events" options={{ title: c.tabEvents }} />
       <Tabs.Screen name="more" options={{ title: c.tabMore }} />
     </Tabs>
   );

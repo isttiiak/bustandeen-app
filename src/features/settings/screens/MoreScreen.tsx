@@ -1,11 +1,12 @@
 import { View } from 'react-native';
 
 import { copyFor } from '@/features/home/copy';
+import { setProto, useProto, type HomeLayout } from '@/features/home/proto';
 import { setThemeMode, useThemeMode } from '@/theme/ThemeProvider';
 import type { ThemeMode } from '@/theme/resolve';
 import { color, type ThemeName } from '@/theme/tokens';
 import { Icon } from '@/ui/Icon';
-import { Segmented } from '@/ui/Inputs';
+import { Chip, Segmented } from '@/ui/Inputs';
 import { PressableScale } from '@/ui/PressableScale';
 import { SectionTitle } from '@/ui/Layout';
 import { Screen } from '@/ui/Screen';
@@ -36,18 +37,32 @@ function Swatch({ theme }: { theme: ThemeName }) {
 const PREVIEW: Partial<Record<ThemeMode, ThemeName>> = {
   dark: 'dark',
   light: 'light',
-  warm: 'warm',
-  mixed: 'mixed',
+  night: 'night',
+  sand: 'sand',
 };
+
+// Pretend times that land in each hero state (sample schedule in features/home/schedule.ts).
+const TIMES: readonly [string, number][] = [
+  ['04:30 before Fajr', 4 * 60 + 30],
+  ['06:25 forbidden', 6 * 60 + 25],
+  ['09:00 between', 9 * 60],
+  ['11:48 forbidden', 11 * 60 + 48],
+  ['13:00 Dhuhr', 13 * 60],
+  ['16:00 Asr', 16 * 60],
+  ['17:15 forbidden', 17 * 60 + 15],
+  ['18:00 Maghrib', 18 * 60],
+  ['21:00 Isha', 21 * 60],
+];
 
 export function MoreScreen() {
   const lang = useLang();
   const mode = useThemeMode();
+  const proto = useProto();
   const c = copyFor(lang);
   const modes: { value: ThemeMode; label: string }[] = [
     { value: 'dark', label: c.themeDark },
-    { value: 'warm', label: c.themeWarm },
-    { value: 'mixed', label: c.themeMixed },
+    { value: 'night', label: c.themeNight },
+    { value: 'sand', label: c.themeSand },
     { value: 'light', label: c.themeLight },
     { value: 'system', label: c.themeSystem },
     { value: 'daylight', label: c.themeDaylight },
@@ -96,6 +111,49 @@ export function MoreScreen() {
         ]}
         value={lang}
         onChange={setLang}
+      />
+      <SectionTitle>{c.protoLayout}</SectionTitle>
+      <Segmented
+        options={[
+          { value: 'a', label: c.layoutA },
+          { value: 'b', label: c.layoutB },
+        ]}
+        value={proto.layout}
+        onChange={(v: HomeLayout) => setProto({ layout: v })}
+      />
+      <SectionTitle>{c.protoTime}</SectionTitle>
+      <View className="flex-row flex-wrap gap-2">
+        <Chip
+          label={c.protoLive}
+          selected={proto.simMinutes == null}
+          onPress={() => setProto({ simMinutes: null })}
+        />
+        {TIMES.map(([label, minutes]) => (
+          <Chip
+            key={label}
+            label={label}
+            selected={proto.simMinutes === minutes}
+            onPress={() => setProto({ simMinutes: minutes })}
+          />
+        ))}
+      </View>
+      <SectionTitle>{c.protoFasting}</SectionTitle>
+      <Segmented
+        options={[
+          { value: 'on', label: c.protoOn },
+          { value: 'off', label: c.protoOff },
+        ]}
+        value={proto.fasting ? 'on' : 'off'}
+        onChange={(v: string) => setProto({ fasting: v === 'on' })}
+      />
+      <SectionTitle>{c.protoData}</SectionTitle>
+      <Segmented
+        options={[
+          { value: 'active', label: c.protoActive },
+          { value: 'empty', label: c.protoEmpty },
+        ]}
+        value={proto.active ? 'active' : 'empty'}
+        onChange={(v: string) => setProto({ active: v === 'active' })}
       />
       <Text variant="caption" tone="faint" className="text-center">
         {c.prototype}

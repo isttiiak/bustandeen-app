@@ -9,7 +9,7 @@ export function TabPlaceholder({
   icon,
 }: {
   title: string;
-  icon?: 'clock' | 'book' | 'counter';
+  icon?: 'clock' | 'book' | 'counter' | 'sun';
 }) {
   const c = copyFor(useLang());
   return (
