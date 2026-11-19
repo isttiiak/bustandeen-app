@@ -1,9 +1,8 @@
 import { Tabs } from 'expo-router';
 
-import { copyFor } from '@/features/home/copy';
-import { useLang } from '@/features/settings/langStore';
 import type { IconName } from '@/ui/Icon';
 import { TabBar } from '@/ui/TabBar';
+import { useTranslation } from 'react-i18next';
 
 const ICONS: Record<string, IconName> = {
   index: 'home',
@@ -14,17 +13,17 @@ const ICONS: Record<string, IconName> = {
 };
 
 export default function TabsLayout() {
-  const c = copyFor(useLang());
+  const { t } = useTranslation();
   return (
     <Tabs
       tabBar={(props) => <TabBar {...props} icons={ICONS} />}
       screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'transparent' } }}
     >
-      <Tabs.Screen name="index" options={{ title: c.tabHome }} />
-      <Tabs.Screen name="salat" options={{ title: c.tabSalat }} />
-      <Tabs.Screen name="quran" options={{ title: c.tabQuran }} />
-      <Tabs.Screen name="events" options={{ title: c.tabEvents }} />
-      <Tabs.Screen name="more" options={{ title: c.tabMore }} />
+      <Tabs.Screen name="index" options={{ title: t('nav.home') }} />
+      <Tabs.Screen name="salat" options={{ title: t('app.tabSalat') }} />
+      <Tabs.Screen name="quran" options={{ title: t('home.quick.quran') }} />
+      <Tabs.Screen name="events" options={{ title: t('app.tabEvents') }} />
+      <Tabs.Screen name="more" options={{ title: t('app.tabMore') }} />
     </Tabs>
   );
 }

@@ -1,4 +1,3 @@
-import { loadLang } from '@/features/settings/langStore';
 import { PREF_KEYS } from '@/lib/prefs';
 import { loadThemeMode, saveThemeMode, type ThemeMode } from '@/theme/resolve';
 
@@ -53,15 +52,6 @@ describe('theme mode persistence', () => {
 
   it('reads a web-saved mode when the app has no key of its own (shared pref)', () => {
     expect(loadThemeMode(fakeStore({ [KEYS.web]: 'daylight' }), KEYS)).toBe('daylight');
-  });
-});
-
-describe('language persistence', () => {
-  it('reads the saved language and falls back to English', () => {
-    expect(loadLang(fakeStore({ [PREF_KEYS.lang]: 'bn' }))).toBe('bn');
-    expect(loadLang(fakeStore({ [PREF_KEYS.lang]: 'en' }))).toBe('en');
-    expect(loadLang(fakeStore())).toBe('en');
-    expect(loadLang(fakeStore({ [PREF_KEYS.lang]: 'fr' }))).toBe('en');
   });
 });
 

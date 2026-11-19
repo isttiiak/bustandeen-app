@@ -4,8 +4,8 @@ import { View } from 'react-native';
 import { Icon } from '@/ui/Icon';
 import { Text } from '@/ui/Text';
 
-import type { Copy } from '../copy';
 import type { HeroInfo } from '../heroInfo';
+import { useTranslation } from 'react-i18next';
 
 /** "Current prayer" or, in a forbidden time, a warning pill that takes the prayer's place. */
 export function StatusPill({ info }: { info: HeroInfo }) {
@@ -21,12 +21,13 @@ export function StatusPill({ info }: { info: HeroInfo }) {
 
 /** Next prayer on the left; iftar or suhoor on the right when the user is fasting. Both columns have
  *  the same shape: a small label, the time big, and (fasting only) how long is left. */
-export function NextFastRow({ info, c }: { info: HeroInfo; c: Copy }) {
+export function NextFastRow({ info }: { info: HeroInfo }) {
+  const { t } = useTranslation();
   return (
     <View className="mt-3 w-full flex-row items-stretch border-t border-hero-ink/15 pt-3">
       <View className="flex-1 items-center gap-0.5">
         <Text variant="caption" tone="hero" className="text-center opacity-70">
-          {`${c.nextLabel} · ${info.next.name}`}
+          {`${t('home.next')} · ${info.next.name}`}
         </Text>
         <Text variant="h2" tone="hero" tabular className="text-center">
           {info.next.time}
@@ -55,11 +56,9 @@ export function NextFastRow({ info, c }: { info: HeroInfo; c: Copy }) {
 /** Layout A: everything inside the arch. */
 export function ArchInfo({
   info,
-  c,
   children,
 }: {
   info: HeroInfo;
-  c: Copy;
   /** The prayer timeline, drawn between the countdown and the next/iftar row. */
   children?: ReactNode;
 }) {
@@ -82,7 +81,7 @@ export function ArchInfo({
         </Text>
       </View>
       {children}
-      <NextFastRow info={info} c={c} />
+      <NextFastRow info={info} />
     </View>
   );
 }

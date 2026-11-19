@@ -1,32 +1,19 @@
 import { useSyncExternalStore } from 'react';
 
-// Language switch (task P2-05). Saved in the encrypted preferences under the web key `bustandeen_lang`
-// and read synchronously on start. P2-06 replaces this with i18next on the same key.
-import { PREF_KEYS, prefStore } from '@/lib/prefs';
+import { changeLang, i18n, type Lang } from '@/lib/i18n';
 
-export type Lang = 'en' | 'bn';
+// The language switch. The language itself lives in i18next (src/lib/i18n.ts) and is saved under the
+// web key `bustandeen_lang`; this keeps the small `useLang` / `setLang` API the screens already use.
+export type { Lang };
 
-export function loadLang(store: { getString: (key: string) => string | undefined }): Lang {
-  const v = store.getString(PREF_KEYS.lang);
-  return v === 'bn' ? 'bn' : 'en';
-}
-
-let lang: Lang = loadLang(prefStore);
-const listeners = new Set<() => void>();
-
-export function setLang(next: Lang): void {
-  if (next === lang) return;
-  lang = next;
-  prefStore.setString(PREF_KEYS.lang, next);
-  listeners.forEach((l) => l());
-}
+export const setLang = changeLang;
 
 export function useLang(): Lang {
   return useSyncExternalStore(
-    (l) => {
-      listeners.add(l);
-      return () => listeners.delete(l);
+    (listener) => {
+      i18n.on('languageChanged', listener);
+      return () => i18n.off('languageChanged', listener);
     },
-    () => lang
+    () => (i18n.language === 'bn' ? 'bn' : 'en')
   );
 }

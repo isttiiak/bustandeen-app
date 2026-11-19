@@ -1,0 +1,101 @@
+{
+  "common": {
+    "today": "Today",
+    "streak": "Streak",
+    "days": "days",
+    "reset": "Reset"
+  },
+  "app": {
+    "tabSalat": "Salat",
+    "tabMore": "More",
+    "nextPrayer": "Next prayer",
+    "timeLeft": "Time left",
+    "todaysPrayers": "Today's prayers",
+    "markDone": "Mark {{name}} as done",
+    "markUndone": "Mark {{name}} as not done",
+    "prayersToday": "Prayers today",
+    "thisWeek": "This week",
+    "average": "Average",
+    "allDone": "All five prayers done",
+    "quickQibla": "Qibla",
+    "soon": "Coming in a later phase",
+    "sampleNote": "Sample times for design review",
+    "location": "Dhaka (sample)",
+    "themeSystem": "System",
+    "themeNight": "Night",
+    "themeSand": "Sand",
+    "themeDaylight": "Daylight",
+    "moreTitle": "More",
+    "tabEvents": "Today's",
+    "currentPrayer": "Current prayer",
+    "forbiddenTime": "Forbidden time",
+    "forbiddenZenith": "Sun at its peak",
+    "forbiddenSunset": "Sunset",
+    "betweenPrayers": "Between prayers",
+    "startsIn": "Starts in",
+    "until": "Until {{time}}",
+    "suhoorEnds": "Suhoor ends",
+    "iftar": "Iftar",
+    "hijriFallback": "Hijri date (sample)",
+    "verseOfDay": "Verse of the day",
+    "quranRef": "Quran {{ref}}",
+    "cardTimes": "Prayer times",
+    "cardTracker": "Tracker",
+    "cardFasting": "Fasting",
+    "todayWord": "today",
+    "dayStreak": "day streak",
+    "pagesToday": "pages today",
+    "daysThisMonth": "days this month",
+    "tapToCount": "Tap to count",
+    "closeSheet": "Close",
+    "openCard": "Open {{name}}"
+  },
+  "home": {
+    "quick": {
+      "quran": "Quran",
+      "zikr": "Zikr"
+    },
+    "timelineDone": "Done",
+    "next": "Next"
+  },
+  "salatNames": {
+    "sunrise": "Sunrise"
+  },
+  "prayerTimes": {
+    "fajr": "Fajr",
+    "dhuhr": "Dhuhr",
+    "asr": "Asr",
+    "maghrib": "Maghrib",
+    "isha": "Isha",
+    "endsIn": "Ends in"
+  },
+  "settings": {
+    "appearanceSection": "Appearance",
+    "language": "Language",
+    "themeDark": "Dark",
+    "themeLight": "Light"
+  },
+  "proto": {
+    "prototype": "Design prototype: sample data, nothing is saved",
+    "protoLayout": "Home layout",
+    "layoutA": "A · Arch",
+    "layoutB": "B · Sky arc",
+    "protoFrame": "Hero shape",
+    "frameArch": "Arch",
+    "framePlain": "Plain card",
+    "protoRow": "Prayer row (as on the website)",
+    "rowShow": "Show",
+    "rowHide": "Hide",
+    "protoTime": "Pretend time of day",
+    "protoFasting": "Fasting today",
+    "protoData": "Sample progress",
+    "protoActive": "Active",
+    "protoEmpty": "Empty",
+    "protoLive": "Live clock",
+    "protoOn": "On",
+    "protoOff": "Off"
+  },
+  "nav": {
+    "home": "Home"
+  }
+}

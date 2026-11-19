@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
-import { copy, digits, fill } from '@/features/home/copy';
+import { digits } from '@/lib/format';
 import {
   dayState,
   fastingMark,
@@ -60,13 +60,8 @@ describe('sample schedule (design prototype only)', () => {
   });
 });
 
-describe('copy', () => {
-  it('has a Bangla string for every English key', () => {
-    expect(Object.keys(copy.bn).sort()).toEqual(Object.keys(copy.en).sort());
-  });
-
-  it('fills placeholders and converts digits', () => {
-    expect(fill('Mark {{name}} as done', { name: 'Asr' })).toBe('Mark Asr as done');
+describe('digits', () => {
+  it('converts digits to Bangla numerals only in Bangla', () => {
     expect(digits('05:02', 'bn')).toBe('০৫:০২');
     expect(digits('05:02', 'en')).toBe('05:02');
   });

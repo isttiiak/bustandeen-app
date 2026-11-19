@@ -49,6 +49,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     'expo-router',
     'expo-secure-store',
+    // English and Bangla: lets Android 13+ list the app in the per-app language settings (task P2-06).
+    ['expo-localization', { supportedLocales: { ios: ['en', 'bn'], android: ['en', 'bn'] } }],
     // SQLCipher build: without `useSQLCipher` PRAGMA key does nothing and raises no error (doc 05).
     ['expo-sqlite', { useSQLCipher: true }],
     // Fonts embedded at build time (decision D12). Sources and licences: assets/fonts/LICENSES/.

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { Button } from '@/ui/Button';
@@ -7,25 +8,28 @@ import { Card } from '@/ui/Card';
 import { Sheet } from '@/ui/Overlays';
 import { PressableScale } from '@/ui/PressableScale';
 
-import { fill, type Copy } from '../copy';
 import { PrayerRow } from './PrayerRow';
-import { SAMPLE_DAY, formatClock, type PrayerId } from '../schedule';
+import { PRAYER_KEY, SAMPLE_DAY, formatClock, type PrayerId } from '../schedule';
 
 export function TimesSheet({
   visible,
   onClose,
-  c,
   num,
   nextId,
 }: {
   visible: boolean;
   onClose: () => void;
-  c: Copy;
   num: (v: string | number) => string;
   nextId: PrayerId;
 }) {
+  const { t } = useTranslation();
   return (
-    <Sheet visible={visible} onClose={onClose} title={c.cardTimes} closeLabel={c.closeSheet}>
+    <Sheet
+      visible={visible}
+      onClose={onClose}
+      title={t('app.cardTimes')}
+      closeLabel={t('app.closeSheet')}
+    >
       <Card className="mb-2 overflow-hidden">
         {SAMPLE_DAY.map((p, i) => (
           <View
@@ -35,7 +39,7 @@ export function TimesSheet({
             }`}
           >
             <Text variant="lead" weight={p.id === nextId ? 'bold' : 'medium'}>
-              {c[p.id]}
+              {t(PRAYER_KEY[p.id])}
             </Text>
             <Text variant="lead" tabular weight={p.id === nextId ? 'bold' : 'regular'}>
               {num(formatClock(p.minutes))}
@@ -50,7 +54,6 @@ export function TimesSheet({
 export function TrackerSheet({
   visible,
   onClose,
-  c,
   num,
   done,
   onToggle,
@@ -58,25 +61,32 @@ export function TrackerSheet({
 }: {
   visible: boolean;
   onClose: () => void;
-  c: Copy;
   num: (v: string | number) => string;
   done: Record<string, boolean>;
   onToggle: (id: PrayerId) => void;
   nextId: PrayerId;
 }) {
+  const { t } = useTranslation();
   return (
-    <Sheet visible={visible} onClose={onClose} title={c.cardTracker} closeLabel={c.closeSheet}>
+    <Sheet
+      visible={visible}
+      onClose={onClose}
+      title={t('app.cardTracker')}
+      closeLabel={t('app.closeSheet')}
+    >
       <Card className="mb-2 overflow-hidden">
         {SAMPLE_DAY.map((p, i) => (
           <View key={p.id} className={i > 0 ? 'border-t border-border' : ''}>
             <PrayerRow
-              name={c[p.id]}
+              name={t(PRAYER_KEY[p.id])}
               time={num(formatClock(p.minutes))}
               tracked={p.tracked}
               done={!!done[p.id]}
               isNext={p.id === nextId}
-              doneLabel={c.done}
-              actionLabel={fill(done[p.id] ? c.markUndone : c.markDone, { name: c[p.id] })}
+              doneLabel={t('home.timelineDone')}
+              actionLabel={t(done[p.id] ? 'app.markUndone' : 'app.markDone', {
+                name: t(PRAYER_KEY[p.id]),
+              })}
               onToggle={() => onToggle(p.id)}
             />
           </View>
@@ -89,20 +99,24 @@ export function TrackerSheet({
 export function ZikrSheet({
   visible,
   onClose,
-  c,
   num,
   count,
   setCount,
 }: {
   visible: boolean;
   onClose: () => void;
-  c: Copy;
   num: (v: string | number) => string;
   count: number;
   setCount: (n: number) => void;
 }) {
+  const { t } = useTranslation();
   return (
-    <Sheet visible={visible} onClose={onClose} title={c.cardZikr} closeLabel={c.closeSheet}>
+    <Sheet
+      visible={visible}
+      onClose={onClose}
+      title={t('home.quick.zikr')}
+      closeLabel={t('app.closeSheet')}
+    >
       <View className="items-center gap-4 pb-2">
         <PressableScale
           onPress={() => {
@@ -111,17 +125,17 @@ export function ZikrSheet({
             haptic(next % 33 === 0 ? 'success' : 'tick');
           }}
           accessibilityRole="button"
-          accessibilityLabel={`${c.tapToCount}: ${num(count)}`}
+          accessibilityLabel={`${t('app.tapToCount')}: ${num(count)}`}
           className="h-52 w-52 items-center justify-center rounded-full border-2 border-gold bg-hero"
         >
           <Text variant="display" tone="hero" tabular style={{ fontSize: 56, lineHeight: 64 }}>
             {num(count)}
           </Text>
           <Text variant="small" tone="hero" className="opacity-70">
-            {c.tapToCount}
+            {t('app.tapToCount')}
           </Text>
         </PressableScale>
-        <Button label={c.resetCount} variant="secondary" onPress={() => setCount(0)} />
+        <Button label={t('common.reset')} variant="secondary" onPress={() => setCount(0)} />
       </View>
     </Sheet>
   );
@@ -130,21 +144,25 @@ export function ZikrSheet({
 export function FastingSheet({
   visible,
   onClose,
-  c,
   num,
 }: {
   visible: boolean;
   onClose: () => void;
-  c: Copy;
   num: (v: string | number) => string;
 }) {
+  const { t } = useTranslation();
   const [fajr, maghrib] = [SAMPLE_DAY[0], SAMPLE_DAY[4]];
   return (
-    <Sheet visible={visible} onClose={onClose} title={c.cardFasting} closeLabel={c.closeSheet}>
+    <Sheet
+      visible={visible}
+      onClose={onClose}
+      title={t('app.cardFasting')}
+      closeLabel={t('app.closeSheet')}
+    >
       <Card className="mb-2 overflow-hidden">
         {[
-          [c.suhoorEnds, fajr.minutes],
-          [c.iftar, maghrib.minutes],
+          [t('app.suhoorEnds'), fajr.minutes],
+          [t('app.iftar'), maghrib.minutes],
         ].map(([label, m], i) => (
           <View
             key={String(label)}

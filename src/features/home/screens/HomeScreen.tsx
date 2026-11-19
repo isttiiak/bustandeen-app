@@ -19,12 +19,13 @@ import { CounterValue, QuickCard, TrackerValue } from '../components/QuickCards'
 import { FastingSheet, TimesSheet, TrackerSheet, ZikrSheet } from '../components/Sheets';
 import { SkyHero } from '../components/SkyHero';
 import { VerseCard } from '../components/VerseCard';
-import { copyFor, digits, fill } from '../copy';
 import { heroInfo } from '../heroInfo';
 import { useNow } from '../hooks';
 import { applySim, setProto, useProto } from '../proto';
 import { dayState, SAMPLE_DAY, type PrayerId } from '../schedule';
 import { verseOfDay } from '../verses';
+import { useTranslation } from 'react-i18next';
+import { digits } from '@/lib/format';
 
 function Block({ index, children }: { index: number; children: ReactNode }) {
   return <Animated.View entering={useEntering(index)}>{children}</Animated.View>;
@@ -51,7 +52,7 @@ type SheetKey = 'times' | 'tracker' | 'zikr' | 'fasting' | null;
 
 function HomeBody({ active }: { active: boolean }) {
   const lang = useLang();
-  const c = copyFor(lang);
+  const { t } = useTranslation();
   const router = useRouter();
   const toast = useToast();
   const proto = useProto();
@@ -64,7 +65,7 @@ function HomeBody({ active }: { active: boolean }) {
   const [sheet, setSheet] = useState<SheetKey>(null);
 
   const num = (n: number | string) => digits(n, lang);
-  const info = useMemo(() => heroInfo(now, c, lang, proto.fasting), [now, c, lang, proto.fasting]);
+  const info = useMemo(() => heroInfo(now, t, lang, proto.fasting), [now, t, lang, proto.fasting]);
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
   const tracked = SAMPLE_DAY.filter((p) => p.tracked);
   const state = dayState(now);
@@ -74,27 +75,27 @@ function HomeBody({ active }: { active: boolean }) {
   const startedId = [...tracked].reverse().find((p) => p.minutes <= nowMinutes)?.id ?? null;
   const doneCount = tracked.filter((p) => done[p.id]).length;
   const names = {
-    fajr: c.fajr,
-    sunrise: c.sunrise,
-    dhuhr: c.dhuhr,
-    asr: c.asr,
-    maghrib: c.maghrib,
-    isha: c.isha,
+    fajr: t('prayerTimes.fajr'),
+    sunrise: t('salatNames.sunrise'),
+    dhuhr: t('prayerTimes.dhuhr'),
+    asr: t('prayerTimes.asr'),
+    maghrib: t('prayerTimes.maghrib'),
+    isha: t('prayerTimes.isha'),
   } satisfies Record<PrayerId, string>;
 
   const toggle = (id: PrayerId) => {
     const nowDone = !done[id];
     setDone((d) => ({ ...d, [id]: nowDone }));
     if (nowDone && tracked.filter((p) => p.id !== id).every((p) => done[p.id])) {
-      toast.show(c.allDone, 'success');
+      toast.show(t('app.allDone'), 'success');
     }
   };
 
   const locale = lang === 'bn' ? 'bn-BD' : 'en-US';
   const date = now.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
-  const hijri = hijriText(now, lang) ?? c.hijriFallback;
+  const hijri = hijriText(now, lang) ?? t('app.hijriFallback');
   const open = (key: Exclude<SheetKey, null>) => () => setSheet(key);
-  const lbl = (name: string) => fill(c.openCard, { name });
+  const lbl = (name: string) => t('app.openCard', { name });
 
   return (
     <Screen scroll>
@@ -108,14 +109,14 @@ function HomeBody({ active }: { active: boolean }) {
               {hijri}
             </Text>
           </View>
-          <Chip label={c.location} />
+          <Chip label={t('app.location')} />
         </View>
       </Block>
 
       <Block index={1}>
         <HeroFrame frame={proto.frame}>
           {proto.layout === 'a' ? (
-            <ArchInfo info={info} c={c}>
+            <ArchInfo info={info}>
               <PrayerTimeline
                 nowMinutes={nowMinutes}
                 currentId={startedId}
@@ -127,7 +128,7 @@ function HomeBody({ active }: { active: boolean }) {
           ) : (
             <SkyHero
               info={info}
-              c={c}
+
               nowMinutes={nowMinutes}
               window={window}
               done={done}
@@ -150,7 +151,7 @@ function HomeBody({ active }: { active: boolean }) {
       </Block>
 
       <Block index={2}>
-        <VerseCard verse={verseOfDay(now)} c={c} lang={lang} />
+        <VerseCard verse={verseOfDay(now)} lang={lang} />
       </Block>
 
       <Block index={3}>
@@ -158,8 +159,8 @@ function HomeBody({ active }: { active: boolean }) {
           <View className="flex-1">
             <QuickCard
               icon="clock"
-              title={c.cardTimes}
-              label={lbl(c.cardTimes)}
+              title={t('app.cardTimes')}
+              label={lbl(t('app.cardTimes'))}
               onPress={open('times')}
             >
               <Text variant="small" tone="muted">
@@ -173,14 +174,14 @@ function HomeBody({ active }: { active: boolean }) {
           <View className="flex-1">
             <QuickCard
               icon="check"
-              title={c.cardTracker}
-              label={lbl(c.cardTracker)}
+              title={t('app.cardTracker')}
+              label={lbl(t('app.cardTracker'))}
               onPress={open('tracker')}
             >
               <TrackerValue
                 done={doneCount}
                 total={tracked.length}
-                label={`${c.prayersToday}: ${doneCount}/${tracked.length}`}
+                label={`${t('app.prayersToday')}: ${doneCount}/${tracked.length}`}
                 num={num}
               />
             </QuickCard>
@@ -193,17 +194,17 @@ function HomeBody({ active }: { active: boolean }) {
           <View className="flex-1">
             <QuickCard
               icon="counter"
-              title={c.cardZikr}
-              label={lbl(c.cardZikr)}
+              title={t('home.quick.zikr')}
+              label={lbl(t('home.quick.zikr'))}
               calling={zikr === 0 && !active}
               onPress={open('zikr')}
             >
               <CounterValue
                 count={zikr}
                 streak={active ? 9 : 0}
-                countLabel={c.todayWord}
-                streakLabel={c.dayStreak}
-                word={c.cardZikr}
+                countLabel={t('app.todayWord')}
+                streakLabel={t('app.dayStreak')}
+                word={t('home.quick.zikr')}
                 num={num}
               />
             </QuickCard>
@@ -211,16 +212,16 @@ function HomeBody({ active }: { active: boolean }) {
           <View className="flex-1">
             <QuickCard
               icon="book"
-              title={c.cardQuran}
-              label={lbl(c.cardQuran)}
+              title={t('home.quick.quran')}
+              label={lbl(t('home.quick.quran'))}
               onPress={() => router.navigate('/quran')}
             >
               <CounterValue
                 count={0}
                 streak={active ? 4 : 0}
-                countLabel={c.pagesToday}
-                streakLabel={c.dayStreak}
-                word={c.cardQuran}
+                countLabel={t('app.pagesToday')}
+                streakLabel={t('app.dayStreak')}
+                word={t('home.quick.quran')}
                 num={num}
               />
             </QuickCard>
@@ -231,36 +232,36 @@ function HomeBody({ active }: { active: boolean }) {
       <Block index={5}>
         <QuickCard
           icon="moon"
-          title={c.cardFasting}
-          label={lbl(c.cardFasting)}
+          title={t('app.cardFasting')}
+          label={lbl(t('app.cardFasting'))}
           onPress={open('fasting')}
         >
           <CounterValue
             count={active ? 6 : 0}
             streak={0}
-            countLabel={c.daysThisMonth}
-            streakLabel={c.dayStreak}
-            word={c.cardFasting}
+            countLabel={t('app.daysThisMonth')}
+            streakLabel={t('app.dayStreak')}
+            word={t('app.cardFasting')}
             num={num}
           />
         </QuickCard>
       </Block>
 
       <Text variant="caption" tone="faint" className="text-center">
-        {c.sampleNote}
+        {t('app.sampleNote')}
       </Text>
 
       <TimesSheet
         visible={sheet === 'times'}
         onClose={() => setSheet(null)}
-        c={c}
+
         num={num}
         nextId={info.next.id}
       />
       <TrackerSheet
         visible={sheet === 'tracker'}
         onClose={() => setSheet(null)}
-        c={c}
+
         num={num}
         done={done}
         onToggle={toggle}
@@ -269,12 +270,12 @@ function HomeBody({ active }: { active: boolean }) {
       <ZikrSheet
         visible={sheet === 'zikr'}
         onClose={() => setSheet(null)}
-        c={c}
+
         num={num}
         count={zikr}
         setCount={setZikr}
       />
-      <FastingSheet visible={sheet === 'fasting'} onClose={() => setSheet(null)} c={c} num={num} />
+      <FastingSheet visible={sheet === 'fasting'} onClose={() => setSheet(null)} num={num} />
     </Screen>
   );
 }

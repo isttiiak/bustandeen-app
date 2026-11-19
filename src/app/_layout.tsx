@@ -4,6 +4,7 @@ import { Stack } from 'expo-router';
 import { LogBox } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { I18nProvider } from '@/features/settings/I18nProvider';
 import { ThemeProvider } from '@/theme/ThemeProvider';
 import { ToastProvider } from '@/ui/Overlays';
 
@@ -15,13 +16,18 @@ LogBox.ignoreLogs(['ImageBackground is deprecated']);
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider>
-        <ToastProvider>
-          <Stack
-            screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}
-          />
-        </ToastProvider>
-      </ThemeProvider>
+      <I18nProvider>
+        <ThemeProvider>
+          <ToastProvider>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: 'transparent' },
+              }}
+            />
+          </ToastProvider>
+        </ThemeProvider>
+      </I18nProvider>
     </GestureHandlerRootView>
   );
 }

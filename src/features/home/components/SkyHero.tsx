@@ -8,7 +8,6 @@ import { PressableScale } from '@/ui/PressableScale';
 import { Text } from '@/ui/Text';
 
 import { arcFraction, arcPoint, arcSegment, labelPoint, skyBody } from '../arcGeometry';
-import type { Copy } from '../copy';
 import type { HeroInfo } from '../heroInfo';
 import { SAMPLE_DAY, SAMPLE_FORBIDDEN, type PrayerId } from '../schedule';
 import { NextFastRow, StatusPill } from './HeroParts';
@@ -29,7 +28,6 @@ const BODY = 44;
  */
 export function SkyHero({
   info,
-  c,
   nowMinutes,
   window,
   done,
@@ -38,7 +36,6 @@ export function SkyHero({
   row,
 }: {
   info: HeroInfo;
-  c: Copy;
   nowMinutes: number;
   /** Start and end of the current prayer's time, or null in a forbidden or between-prayers moment. */
   window: { start: number; end: number } | null;
@@ -225,7 +222,7 @@ export function SkyHero({
         </Text>
       </View>
       {row}
-      <NextFastRow info={info} c={c} />
+      <NextFastRow info={info} />
     </View>
   );
 }

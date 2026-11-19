@@ -5,21 +5,23 @@ import { Card } from '@/ui/Card';
 import { Icon } from '@/ui/Icon';
 import { Text } from '@/ui/Text';
 
-import { digits, fill, type Copy } from '../copy';
 import type { Verse } from '../verses';
+import { useTranslation } from 'react-i18next';
+import { digits } from '@/lib/format';
 
 /** The verse of the day: Arabic first, then the translation in the app language, then the reference. */
-export function VerseCard({ verse, c, lang }: { verse: Verse; c: Copy; lang: Lang }) {
+export function VerseCard({ verse, lang }: { verse: Verse; lang: Lang }) {
+  const { t } = useTranslation();
   const ref = digits(verse.key, lang);
   return (
     <Card className="gap-3 p-5">
       <View className="flex-row items-center gap-2">
         <Icon name="book" size={16} color="gold" />
         <Text variant="caption" tone="gold" weight="semibold" className="flex-1">
-          {c.verseOfDay}
+          {t('app.verseOfDay')}
         </Text>
         <Text variant="caption" tone="muted" tabular>
-          {fill(c.quranRef, { ref })}
+          {t('app.quranRef', { ref })}
         </Text>
       </View>
       <Text

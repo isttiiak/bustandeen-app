@@ -1,7 +1,7 @@
-import { copyFor } from '@/features/home/copy';
 import { TabPlaceholder } from '@/features/home/screens/TabPlaceholder';
-import { useLang } from '@/features/settings/langStore';
+import { useTranslation } from 'react-i18next';
 
 export function QuranScreen() {
-  return <TabPlaceholder title={copyFor(useLang()).tabQuran} icon="book" />;
+  const { t } = useTranslation();
+  return <TabPlaceholder title={t('home.quick.quran')} icon="book" />;
 }

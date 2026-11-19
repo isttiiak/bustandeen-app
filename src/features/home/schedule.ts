@@ -5,6 +5,16 @@
 
 export type PrayerId = 'fajr' | 'sunrise' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
 
+/** i18n key of each prayer's name (website keys, so the wording matches the website). */
+export const PRAYER_KEY: Record<PrayerId, string> = {
+  fajr: 'prayerTimes.fajr',
+  sunrise: 'salatNames.sunrise',
+  dhuhr: 'prayerTimes.dhuhr',
+  asr: 'prayerTimes.asr',
+  maghrib: 'prayerTimes.maghrib',
+  isha: 'prayerTimes.isha',
+};
+
 export interface SamplePrayer {
   id: PrayerId;
   /** Minutes after local midnight. */
