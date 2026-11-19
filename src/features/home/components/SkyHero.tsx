@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useWindowDimensions, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
@@ -35,6 +35,7 @@ export function SkyHero({
   done,
   names,
   onToggle,
+  row,
 }: {
   info: HeroInfo;
   c: Copy;
@@ -44,6 +45,8 @@ export function SkyHero({
   done: Record<string, boolean>;
   names: Record<PrayerId, string>;
   onToggle: (id: PrayerId) => void;
+  /** Optional prayer row (the website's five nodes) under the arc. */
+  row?: ReactNode;
 }) {
   const theme = useTheme();
   // Start from the screen width so the arc is drawn on the very first frame, then settle to the
@@ -221,6 +224,7 @@ export function SkyHero({
           {`${info.countLabel} ${info.countdown}`}
         </Text>
       </View>
+      {row}
       <NextFastRow info={info} c={c} />
     </View>
   );

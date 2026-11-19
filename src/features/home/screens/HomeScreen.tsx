@@ -133,6 +133,17 @@ function HomeBody({ active }: { active: boolean }) {
               done={done}
               names={names}
               onToggle={toggle}
+              row={
+                proto.prayerRow ? (
+                  <PrayerTimeline
+                    nowMinutes={nowMinutes}
+                    currentId={startedId}
+                    done={done}
+                    names={names}
+                    onToggle={toggle}
+                  />
+                ) : undefined
+              }
             />
           )}
         </HeroFrame>

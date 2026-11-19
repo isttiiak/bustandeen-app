@@ -112,6 +112,15 @@ export function MoreScreen() {
         value={proto.frame}
         onChange={(v: HeroFrameKind) => setProto({ frame: v })}
       />
+      <SectionTitle>{c.protoRow}</SectionTitle>
+      <Segmented
+        options={[
+          { value: 'show', label: c.rowShow },
+          { value: 'hide', label: c.rowHide },
+        ]}
+        value={proto.prayerRow ? 'show' : 'hide'}
+        onChange={(v: string) => setProto({ prayerRow: v === 'show' })}
+      />
       <SectionTitle>{c.language}</SectionTitle>
       <Segmented
         options={[

@@ -8,7 +8,9 @@ import { color, isLightTheme, tokenVars, type ColorName, type ThemeName } from '
 
 // The chosen mode lives in a tiny store. It is in memory for now: P2-07 adds encrypted storage and
 // P2-14 syncs it under the web key `bustandeen_theme_mode` (see resolve.ts).
-let mode: ThemeMode = 'system';
+// Night is the app's own dark-first look (decision O22/O24), so it is what a new user sees; the web's
+// dark and light, Sand and System are one tap away in More.
+let mode: ThemeMode = 'night';
 const listeners = new Set<() => void>();
 
 export function setThemeMode(next: ThemeMode): void {
