@@ -46,3 +46,44 @@ export function resolveTheme(
       return 'dark';
   }
 }
+
+// ---- Saving the chosen mode ----------------------------------------------------------------------
+// The web's four modes go under the web key; the app-only modes under their own key, so the web key
+// never holds a value the website cannot read. The app key wins when both exist.
+
+/** Modes the website understands. */
+export const webThemeModes = ['system', 'dark', 'light', 'daylight'] as const;
+/** Modes that exist only in the app. */
+export const appThemeModes = ['night', 'sand'] as const;
+
+export const DEFAULT_THEME_MODE: ThemeMode = 'night';
+
+const isMode = (v: string | undefined, list: readonly string[]): v is ThemeMode =>
+  v !== undefined && list.includes(v);
+
+interface Store {
+  getString: (key: string) => string | undefined;
+  setString: (key: string, value: string) => void;
+  remove: (key: string) => void;
+}
+
+export function loadThemeMode(store: Store, keys: { web: string; app: string }): ThemeMode {
+  const app = store.getString(keys.app);
+  if (isMode(app, appThemeModes)) return app;
+  const web = store.getString(keys.web);
+  if (isMode(web, webThemeModes)) return web;
+  return DEFAULT_THEME_MODE;
+}
+
+export function saveThemeMode(
+  store: Store,
+  keys: { web: string; app: string },
+  mode: ThemeMode
+): void {
+  if (isMode(mode, appThemeModes)) {
+    store.setString(keys.app, mode);
+    return;
+  }
+  store.setString(keys.web, mode);
+  store.remove(keys.app);
+}

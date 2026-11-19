@@ -76,3 +76,21 @@ jest.mock(
   'react-native-safe-area-context',
   () => require('react-native-safe-area-context/jest/mock').default
 );
+
+// The encrypted key-value store needs native code (MMKV and the OS keystore). Unit tests get an in-memory
+// stand-in with the same functions; the real thing is checked on a device (task P2-07, /dev/storage).
+jest.mock('./src/lib/kv', () => {
+  const data = new Map();
+  return {
+    kv: {
+      getString: (k) => (typeof data.get(k) === 'string' ? data.get(k) : undefined),
+      setString: (k, v) => void data.set(k, v),
+      getBoolean: (k) => (typeof data.get(k) === 'boolean' ? data.get(k) : undefined),
+      setBoolean: (k, v) => void data.set(k, v),
+      getNumber: (k) => (typeof data.get(k) === 'number' ? data.get(k) : undefined),
+      setNumber: (k, v) => void data.set(k, v),
+      remove: (k) => void data.delete(k),
+      clearAll: () => data.clear(),
+    },
+  };
+});
