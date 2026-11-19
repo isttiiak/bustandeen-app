@@ -38,9 +38,27 @@ describe('Text', () => {
     expect(s.lineHeight).toBe(Math.round(16 * 1.65));
   });
 
-  it('never shrinks Bangla to its own width (Android measurement bug, doc 06 s3)', async () => {
-    await render(<Text>আজই</Text>);
-    expect(style(screen.getByText('আজই'))).toMatchObject({ alignSelf: 'stretch' });
+  it('gives Bangla trailing slack so it cannot lose its last word when shrunk (doc 06 s3)', async () => {
+    await render(<Text>আজই আপনার</Text>);
+    const rendered = screen.getByText('আজই আপনার', { exact: false }).props.children as string;
+    expect(rendered.startsWith('আজই আপনার')).toBe(true);
+    expect(rendered.length).toBeGreaterThan('আজই আপনার'.length);
+    expect(rendered.slice('আজই আপনার'.length)).toMatch(/^\u00A0+$/);
+  });
+
+  it('puts the slack on both sides of centred Bangla', async () => {
+    await render(
+      <Text className="text-center" testID="c">
+        আজই
+      </Text>
+    );
+    const rendered = screen.getByTestId('c').props.children as string;
+    expect(rendered).toMatch(/^\u00A0+আজই\u00A0+$/);
+  });
+
+  it('adds no slack to Latin text', async () => {
+    await render(<Text>Prayer</Text>);
+    expect(screen.getByText('Prayer').props.children).toBe('Prayer');
   });
 
   it('uses the script prop when children are not a plain string', async () => {

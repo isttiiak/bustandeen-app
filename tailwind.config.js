@@ -32,6 +32,7 @@ const names = [
   'reader-text',
   'reader-soft',
   'reader-note',
+  'on-color',
 ];
 
 /** @type {import('tailwindcss').Config} */

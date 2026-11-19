@@ -10,6 +10,7 @@
     "expo-device": "~58.0.5",
     "expo-font": "~58.0.12",
     "expo-glass-effect": "~58.0.5",
+    "expo-haptics": "~58.0.8",
     "expo-image": "~58.0.18",
     "expo-linking": "~58.0.17",
     "expo-router": "~58.0.32",
@@ -26,6 +27,7 @@
     "react-native-reanimated": "4.7.1",
     "react-native-safe-area-context": "~5.11.1",
     "react-native-screens": "~4.30.1",
+    "react-native-svg": "15.16.0",
     "react-native-web": "~0.21.4",
     "react-native-worklets": "0.13.0"
   },
@@ -52,11 +54,15 @@
     "test": "jest",
     "doctor": "npx --yes expo-doctor",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "check:dev-routes": "node scripts/check-no-dev-routes.mjs"
   },
   "private": true,
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "setupFiles": [
+      "./jest.setup.js"
+    ]
   },
   "engines": {
     "node": "24.x"

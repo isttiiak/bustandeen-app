@@ -1,4 +1,10 @@
-import { Text as RNText, type TextProps as RNTextProps, type TextStyle } from 'react-native';
+import type { ReactNode } from 'react';
+import {
+  StyleSheet,
+  Text as RNText,
+  type TextProps as RNTextProps,
+  type TextStyle,
+} from 'react-native';
 
 import { fonts } from '@/theme/fonts';
 
@@ -18,7 +24,7 @@ export const textVariants = [
 ] as const;
 export type TextVariant = (typeof textVariants)[number];
 
-export type TextTone = 'ink' | 'muted' | 'faint' | 'gold' | 'emerald' | 'danger';
+export type TextTone = 'ink' | 'muted' | 'faint' | 'gold' | 'emerald' | 'danger' | 'onColor';
 export type TextWeight = 'regular' | 'medium' | 'semibold' | 'bold';
 export type TextScript = 'latin' | 'bangla';
 
@@ -44,6 +50,7 @@ export const variantSpecs: Record<TextVariant, VariantSpec> = {
 };
 
 export const BANGLA_LINE_RATIO = 1.65;
+export const BANGLA_TIGHT_RATIO = 1.35;
 
 // Literal class names so Tailwind can see them. `muted` and `faint` are the ink opacity steps of
 // doc 06 section 1 (70 and 50). `faint` reaches only about 3:1 (2.9:1 on the light hero), so it is for decoration and
@@ -55,6 +62,8 @@ const toneClass: Record<TextTone, string> = {
   gold: 'text-gold',
   emerald: 'text-emerald',
   danger: 'text-danger',
+  /** Always-white text on a solid coloured fill. */
+  onColor: 'text-on-color',
 };
 
 const weightValue: Record<TextWeight, TextStyle['fontWeight']> = {
@@ -73,12 +82,31 @@ export function containsBangla(children: unknown): boolean {
   return false;
 }
 
+/**
+ * Where Bangla text must shrink to its content (button labels, chips, row items), Android measures
+ * it about 2.5% narrower than it draws it and wraps the last word onto a second line that the
+ * parent has no height for (doc 06 section 3). Padding does not help (it is outside the text's
+ * width), so the string gets trailing no-break spaces: they count in the measured width, add no
+ * visible mark and are trimmed by screen readers and test queries.
+ */
+export function withBanglaSlack(children: ReactNode, centered = false): ReactNode {
+  if (typeof children !== 'string') return children;
+  const pad = '\u00A0'.repeat(Math.max(1, Math.ceil(children.length * 0.085)));
+  // Centred text gets the same slack on both sides, so its middle does not move.
+  return centered ? pad + children + pad : children + pad;
+}
+
 export interface TextProps extends RNTextProps {
   variant?: TextVariant;
   tone?: TextTone;
   weight?: TextWeight;
   /** Set when the text is not a plain string (nested elements), so the right font is used. */
   script?: TextScript;
+  /** Use the heading font (El Messiri) for a non-heading variant, e.g. a section title. */
+  display?: boolean;
+  /** Single-line control label (button, chip, tab): Bangla gets a tighter line height so the label
+   *  sits in the middle of its control instead of near the top. */
+  tight?: boolean;
   /** Tabular figures: use for times and counts so digits do not jump. */
   tabular?: boolean;
 }
@@ -89,6 +117,8 @@ export function Text({
   weight,
   script,
   tabular,
+  display,
+  tight,
   className,
   style,
   children,
@@ -98,16 +128,20 @@ export function Text({
   const spec = variantSpecs[variant];
   const bangla = (script ?? (containsBangla(children) ? 'bangla' : 'latin')) === 'bangla';
 
+  const centered =
+    !!className?.includes('text-center') || StyleSheet.flatten(style)?.textAlign === 'center';
+
   const base: TextStyle = {
-    fontFamily: bangla ? fonts.bangla : spec.heading ? fonts.display : fonts.body,
+    fontFamily: bangla ? fonts.bangla : spec.heading || display ? fonts.display : fonts.body,
     fontSize: spec.size,
-    lineHeight: bangla ? Math.round(spec.size * BANGLA_LINE_RATIO) : spec.line,
+    lineHeight: bangla
+      ? Math.round(spec.size * (tight ? BANGLA_TIGHT_RATIO : BANGLA_LINE_RATIO))
+      : spec.line,
     fontWeight: weightValue[weight ?? spec.weight],
     ...(tabular ? { fontVariant: ['tabular-nums'] } : null),
-    // Android measures Hind Siliguri about 2.5% narrower than it draws it (doc 06 section 3), so
-    // Bangla text that shrinks to its own width loses its last word. Let it fill the parent's
-    // width instead. Inside a row, give the Text `className="flex-1"` for the same effect.
-    ...(bangla ? { alignSelf: 'stretch', flexShrink: 1 } : null),
+    // Bangla text may shrink to its content only with the trailing slack of `withBanglaSlack`
+    // (Android measures Hind Siliguri narrower than it draws it; doc 06 section 3).
+    ...(bangla ? { flexShrink: 1 } : null),
   };
 
   return (
@@ -118,7 +152,7 @@ export function Text({
       style={[base, style]}
       {...rest}
     >
-      {children}
+      {bangla ? withBanglaSlack(children, centered) : children}
     </RNText>
   );
 }

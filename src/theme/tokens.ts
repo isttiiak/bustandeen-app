@@ -3,6 +3,10 @@
 // reads that file and fails if the two drift apart. `ink` is the text colour of the theme (the web
 // calls it `white`); `danger-soft` / `danger` are the web's `red-300` / `red-400`.
 
+/** Tokens that exist only in the app (no `--c-*` twin on the web): `on-color` is always-white text on
+ *  a solid coloured fill (doc 06 section 1). The web-equality test skips these. */
+export const appOnlyTokens = ['on-color'] as const;
+
 export type Rgb = readonly [number, number, number];
 
 export const themeNames = ['dark', 'light'] as const;
@@ -39,6 +43,7 @@ const dark = {
   'reader-text': [232, 226, 208],
   'reader-soft': [214, 208, 191],
   'reader-note': [216, 208, 184],
+  'on-color': [255, 255, 255],
 } as const satisfies Record<string, Rgb>;
 
 export type ColorName = keyof typeof dark;
@@ -74,6 +79,7 @@ const light: Record<ColorName, Rgb> = {
   'reader-text': [31, 36, 24],
   'reader-soft': [60, 66, 50],
   'reader-note': [60, 66, 50],
+  'on-color': [255, 255, 255],
 };
 
 export const tokens: Record<ThemeName, Record<ColorName, Rgb>> = { dark, light };
