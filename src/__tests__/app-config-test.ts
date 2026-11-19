@@ -23,4 +23,14 @@ describe('app identity', () => {
   it('is portrait on phones', () => {
     expect(config.orientation).toBe('portrait');
   });
+
+  it('blocks storage and overlay permissions in the main manifest (D11)', () => {
+    expect(config.android?.blockedPermissions).toEqual(
+      expect.arrayContaining([
+        'android.permission.READ_EXTERNAL_STORAGE',
+        'android.permission.WRITE_EXTERNAL_STORAGE',
+        'android.permission.SYSTEM_ALERT_WINDOW',
+      ])
+    );
+  });
 });
