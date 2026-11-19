@@ -3,19 +3,22 @@ import { vars } from 'nativewind';
 import { createContext, useContext, useMemo, useSyncExternalStore, type ReactNode } from 'react';
 import { Appearance, useColorScheme, View } from 'react-native';
 
-import { resolveTheme, type ThemeMode } from './resolve';
+import { PREF_KEYS, prefStore } from '@/lib/prefs';
+
+import { loadThemeMode, resolveTheme, saveThemeMode, type ThemeMode } from './resolve';
 import { color, isLightTheme, tokenVars, type ColorName, type ThemeName } from './tokens';
 
-// The chosen mode lives in a tiny store. It is in memory for now: P2-07 adds encrypted storage and
-// P2-14 syncs it under the web key `bustandeen_theme_mode` (see resolve.ts).
-// Night is the app's own dark-first look (decision O22/O24), so it is what a new user sees; the web's
-// dark and light, Sand and System are one tap away in More.
-let mode: ThemeMode = 'night';
+// The chosen mode lives in a tiny store, read from the encrypted preferences on start (synchronously, so
+// there is no flash of the wrong theme) and saved on every change. New users get Night (O24). P2-14
+// syncs it with the web under `bustandeen_theme_mode`; the app-only modes stay on the device.
+const KEYS = { web: PREF_KEYS.themeMode, app: PREF_KEYS.appThemeMode };
+let mode: ThemeMode = loadThemeMode(prefStore, KEYS);
 const listeners = new Set<() => void>();
 
 export function setThemeMode(next: ThemeMode): void {
   if (next === mode) return;
   mode = next;
+  saveThemeMode(prefStore, KEYS, next);
   listeners.forEach((l) => l());
 }
 
