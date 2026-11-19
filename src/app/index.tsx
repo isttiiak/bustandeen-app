@@ -1,7 +1,6 @@
-import { StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { paletteFor } from '@/theme/colors';
 import { fonts } from '@/theme/fonts';
 
 // P0 check screen (task P0, B4): proves the bundled fonts are embedded and that Bangla is shaped
@@ -16,16 +15,18 @@ export const HELLO_TEXT = {
 } as const;
 
 export default function HelloScreen() {
-  const colors = paletteFor(useColorScheme());
-
   return (
-    <SafeAreaView style={[styles.screen, { backgroundColor: colors.void }]}>
+    <SafeAreaView style={styles.screen} className="bg-void">
       <View style={styles.content}>
-        <Text accessibilityRole="header" style={[styles.appName, { color: colors.gold }]}>
+        <Text accessibilityRole="header" style={styles.appName} className="text-gold">
           {HELLO_TEXT.appName}
         </Text>
-        <Text style={[styles.english, { color: colors.ink }]}>{HELLO_TEXT.en}</Text>
-        <Text style={[styles.bangla, { color: colors.emerald }]}>{HELLO_TEXT.bn}</Text>
+        <Text style={styles.english} className="text-ink">
+          {HELLO_TEXT.en}
+        </Text>
+        <Text style={styles.bangla} className="text-emerald">
+          {HELLO_TEXT.bn}
+        </Text>
       </View>
     </SafeAreaView>
   );
