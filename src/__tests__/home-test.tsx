@@ -196,6 +196,17 @@ describe('Home screen', () => {
     expect(screen.getByRole('checkbox', { name: 'Asr' })).toBeChecked();
   });
 
+  it('layout B can also show the website-style prayer row, in either frame', async () => {
+    setProto({ layout: 'b', prayerRow: false });
+    await renderHome();
+    expect(screen.getAllByRole('checkbox', { name: 'Asr' })).toHaveLength(1);
+    await act(async () => setProto({ prayerRow: true }));
+    expect(screen.getAllByRole('checkbox', { name: 'Asr' })).toHaveLength(2);
+    await act(async () => setProto({ frame: 'plain' }));
+    expect(screen.getAllByRole('checkbox', { name: 'Asr' })).toHaveLength(2);
+    await act(async () => setProto({ prayerRow: false, frame: 'arch' }));
+  });
+
   it('opens the full prayer times from the card', async () => {
     await renderHome();
     await fireEvent.press(screen.getByRole('button', { name: 'Open Prayer times' }));

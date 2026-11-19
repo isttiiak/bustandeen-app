@@ -9,6 +9,8 @@ export interface Proto {
   layout: HomeLayout;
   /** The shape around the hero: the arch, or a plain rounded card. */
   frame: HeroFrameKind;
+  /** Layout B only: also show the web-style row of five prayer nodes under the arc. */
+  prayerRow: boolean;
   /** Minutes after midnight to pretend it is, or null for the real clock. */
   simMinutes: number | null;
   fasting: boolean;
@@ -21,6 +23,7 @@ export interface Proto {
 let state: Proto = {
   layout: 'b',
   frame: 'arch',
+  prayerRow: false,
   simMinutes: 13 * 60,
   fasting: true,
   active: true,
