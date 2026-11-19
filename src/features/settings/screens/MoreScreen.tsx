@@ -1,6 +1,5 @@
 import { View } from 'react-native';
 
-import { copyFor } from '@/features/home/copy';
 import { setProto, useProto, type HeroFrameKind, type HomeLayout } from '@/features/home/proto';
 import { setThemeMode, useThemeMode } from '@/theme/ThemeProvider';
 import type { ThemeMode } from '@/theme/resolve';
@@ -13,6 +12,7 @@ import { Screen } from '@/ui/Screen';
 import { Text } from '@/ui/Text';
 
 import { setLang, useLang } from '../langStore';
+import { useTranslation } from 'react-i18next';
 
 // Mini preview of each theme (prototype): page, card and accent, read from the tokens.
 function Swatch({ theme }: { theme: ThemeName }) {
@@ -58,20 +58,20 @@ export function MoreScreen() {
   const lang = useLang();
   const mode = useThemeMode();
   const proto = useProto();
-  const c = copyFor(lang);
+  const { t } = useTranslation();
   const modes: { value: ThemeMode; label: string }[] = [
-    { value: 'dark', label: c.themeDark },
-    { value: 'night', label: c.themeNight },
-    { value: 'sand', label: c.themeSand },
-    { value: 'light', label: c.themeLight },
-    { value: 'system', label: c.themeSystem },
-    { value: 'daylight', label: c.themeDaylight },
+    { value: 'dark', label: t('settings.themeDark') },
+    { value: 'night', label: t('app.themeNight') },
+    { value: 'sand', label: t('app.themeSand') },
+    { value: 'light', label: t('settings.themeLight') },
+    { value: 'system', label: t('app.themeSystem') },
+    { value: 'daylight', label: t('app.themeDaylight') },
   ];
 
   return (
     <Screen scroll>
-      <Text variant="h1">{c.moreTitle}</Text>
-      <SectionTitle icon="moon">{c.appearance}</SectionTitle>
+      <Text variant="h1">{t('app.moreTitle')}</Text>
+      <SectionTitle icon="moon">{t('settings.appearanceSection')}</SectionTitle>
       <View className="flex-row flex-wrap gap-3">
         {modes.map((m) => {
           const preview = PREVIEW[m.value];
@@ -103,25 +103,25 @@ export function MoreScreen() {
           );
         })}
       </View>
-      <SectionTitle>{c.protoFrame}</SectionTitle>
+      <SectionTitle>{t('proto.protoFrame')}</SectionTitle>
       <Segmented
         options={[
-          { value: 'arch', label: c.frameArch },
-          { value: 'plain', label: c.framePlain },
+          { value: 'arch', label: t('proto.frameArch') },
+          { value: 'plain', label: t('proto.framePlain') },
         ]}
         value={proto.frame}
         onChange={(v: HeroFrameKind) => setProto({ frame: v })}
       />
-      <SectionTitle>{c.protoRow}</SectionTitle>
+      <SectionTitle>{t('proto.protoRow')}</SectionTitle>
       <Segmented
         options={[
-          { value: 'show', label: c.rowShow },
-          { value: 'hide', label: c.rowHide },
+          { value: 'show', label: t('proto.rowShow') },
+          { value: 'hide', label: t('proto.rowHide') },
         ]}
         value={proto.prayerRow ? 'show' : 'hide'}
         onChange={(v: string) => setProto({ prayerRow: v === 'show' })}
       />
-      <SectionTitle>{c.language}</SectionTitle>
+      <SectionTitle>{t('settings.language')}</SectionTitle>
       <Segmented
         options={[
           { value: 'en', label: 'English' },
@@ -130,19 +130,19 @@ export function MoreScreen() {
         value={lang}
         onChange={setLang}
       />
-      <SectionTitle>{c.protoLayout}</SectionTitle>
+      <SectionTitle>{t('proto.protoLayout')}</SectionTitle>
       <Segmented
         options={[
-          { value: 'a', label: c.layoutA },
-          { value: 'b', label: c.layoutB },
+          { value: 'a', label: t('proto.layoutA') },
+          { value: 'b', label: t('proto.layoutB') },
         ]}
         value={proto.layout}
         onChange={(v: HomeLayout) => setProto({ layout: v })}
       />
-      <SectionTitle>{c.protoTime}</SectionTitle>
+      <SectionTitle>{t('proto.protoTime')}</SectionTitle>
       <View className="flex-row flex-wrap gap-2">
         <Chip
-          label={c.protoLive}
+          label={t('proto.protoLive')}
           selected={proto.simMinutes == null}
           onPress={() => setProto({ simMinutes: null })}
         />
@@ -155,26 +155,26 @@ export function MoreScreen() {
           />
         ))}
       </View>
-      <SectionTitle>{c.protoFasting}</SectionTitle>
+      <SectionTitle>{t('proto.protoFasting')}</SectionTitle>
       <Segmented
         options={[
-          { value: 'on', label: c.protoOn },
-          { value: 'off', label: c.protoOff },
+          { value: 'on', label: t('proto.protoOn') },
+          { value: 'off', label: t('proto.protoOff') },
         ]}
         value={proto.fasting ? 'on' : 'off'}
         onChange={(v: string) => setProto({ fasting: v === 'on' })}
       />
-      <SectionTitle>{c.protoData}</SectionTitle>
+      <SectionTitle>{t('proto.protoData')}</SectionTitle>
       <Segmented
         options={[
-          { value: 'active', label: c.protoActive },
-          { value: 'empty', label: c.protoEmpty },
+          { value: 'active', label: t('proto.protoActive') },
+          { value: 'empty', label: t('proto.protoEmpty') },
         ]}
         value={proto.active ? 'active' : 'empty'}
         onChange={(v: string) => setProto({ active: v === 'active' })}
       />
       <Text variant="caption" tone="faint" className="text-center">
-        {c.prototype}
+        {t('proto.prototype')}
       </Text>
     </Screen>
   );

@@ -1,0 +1,101 @@
+{
+  "common": {
+    "today": "আজ",
+    "streak": "ধারাবাহিকতা",
+    "days": "দিন",
+    "reset": "রিসেট"
+  },
+  "app": {
+    "tabSalat": "সালাত",
+    "tabMore": "আরও",
+    "nextPrayer": "পরবর্তী নামায",
+    "timeLeft": "বাকি সময়",
+    "todaysPrayers": "আজকের নামায",
+    "markDone": "{{name}} সম্পন্ন করুন",
+    "markUndone": "{{name}} সম্পন্ন হয়নি করুন",
+    "prayersToday": "আজকের নামায",
+    "thisWeek": "এই সপ্তাহ",
+    "average": "গড়",
+    "allDone": "পাঁচ ওয়াক্তই সম্পন্ন",
+    "quickQibla": "কিবলা",
+    "soon": "পরের ধাপে আসছে",
+    "sampleNote": "ডিজাইন দেখার জন্য নমুনা সময়",
+    "location": "ঢাকা (নমুনা)",
+    "themeSystem": "সিস্টেম",
+    "themeNight": "নাইট",
+    "themeSand": "বালুকা",
+    "themeDaylight": "দিনের আলো",
+    "moreTitle": "আরও",
+    "tabEvents": "আজকের দিন",
+    "currentPrayer": "এখনকার নামায",
+    "forbiddenTime": "নামায নিষিদ্ধ সময়",
+    "forbiddenZenith": "সূর্য মাথার ওপরে",
+    "forbiddenSunset": "সূর্যাস্ত",
+    "betweenPrayers": "দুই নামাযের মাঝে",
+    "startsIn": "শুরু হতে বাকি",
+    "until": "{{time}} পর্যন্ত",
+    "suhoorEnds": "সাহরি শেষ",
+    "iftar": "ইফতার",
+    "hijriFallback": "হিজরি তারিখ (নমুনা)",
+    "verseOfDay": "আজকের আয়াত",
+    "quranRef": "কুরআন {{ref}}",
+    "cardTimes": "নামাযের সময়",
+    "cardTracker": "ট্র্যাকার",
+    "cardFasting": "রোজা",
+    "todayWord": "আজ",
+    "dayStreak": "দিনের ধারা",
+    "pagesToday": "পৃষ্ঠা আজ",
+    "daysThisMonth": "এই মাসে দিন",
+    "tapToCount": "গুনতে ট্যাপ করুন",
+    "closeSheet": "বন্ধ করুন",
+    "openCard": "{{name}} খুলুন"
+  },
+  "home": {
+    "quick": {
+      "quran": "কুরআন",
+      "zikr": "যিকির"
+    },
+    "timelineDone": "সম্পন্ন",
+    "next": "পরবর্তী"
+  },
+  "salatNames": {
+    "sunrise": "সূর্যোদয়"
+  },
+  "prayerTimes": {
+    "fajr": "ফজর",
+    "dhuhr": "যুহর",
+    "asr": "আসর",
+    "maghrib": "মাগরিব",
+    "isha": "ইশা",
+    "endsIn": "শেষ হতে বাকি"
+  },
+  "settings": {
+    "appearanceSection": "থিম",
+    "language": "ভাষা",
+    "themeDark": "ডার্ক",
+    "themeLight": "লাইট"
+  },
+  "proto": {
+    "prototype": "ডিজাইন প্রোটোটাইপ: নমুনা তথ্য, কিছু সংরক্ষিত হয় না",
+    "protoLayout": "Home layout",
+    "layoutA": "A · Arch",
+    "layoutB": "B · Sky arc",
+    "protoFrame": "Hero shape",
+    "frameArch": "Arch",
+    "framePlain": "Plain card",
+    "protoRow": "Prayer row (as on the website)",
+    "rowShow": "Show",
+    "rowHide": "Hide",
+    "protoTime": "Pretend time of day",
+    "protoFasting": "Fasting today",
+    "protoData": "Sample progress",
+    "protoActive": "Active",
+    "protoEmpty": "Empty",
+    "protoLive": "Live clock",
+    "protoOn": "On",
+    "protoOff": "Off"
+  },
+  "nav": {
+    "home": "হোম"
+  }
+}

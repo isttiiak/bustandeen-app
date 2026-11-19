@@ -44,6 +44,9 @@ jobs:
       - name: Test
         run: npm test
 
+      - name: Every English string has a Bangla string
+        run: npm run i18n:check
+
       - name: Migration bundle matches the SQL
         run: npm run db:check
 

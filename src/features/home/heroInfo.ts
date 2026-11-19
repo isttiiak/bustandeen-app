@@ -1,12 +1,15 @@
-import type { Lang } from '@/features/settings/langStore';
+import type { TFunction } from 'i18next';
 
-import { digits, type Copy } from './copy';
+import type { Lang } from '@/features/settings/langStore';
+import { digits } from '@/lib/format';
+
 import {
   dayState,
   fastingMark,
   formatClock,
   formatCountdown,
   nextPrayer,
+  PRAYER_KEY,
   type PrayerId,
 } from './schedule';
 
@@ -35,40 +38,44 @@ export interface HeroInfo {
 
 const hm = (ms: number) => formatCountdown(ms).slice(0, 5);
 
-export function heroInfo(now: Date, c: Copy, lang: Lang, fasting: boolean): HeroInfo {
+export function heroInfo(now: Date, t: TFunction, lang: Lang, fasting: boolean): HeroInfo {
   const n = (v: string | number) => digits(v, lang);
   const clock = (m: number) => n(formatClock(m));
   const state = dayState(now);
   const nxt = nextPrayer(now);
-  const next = { id: nxt.prayer.id, name: c[nxt.prayer.id], time: clock(nxt.prayer.minutes) };
+  const next = {
+    id: nxt.prayer.id,
+    name: t(PRAYER_KEY[nxt.prayer.id]),
+    time: clock(nxt.prayer.minutes),
+  };
 
   let kind: HeroInfo['kind'] = 'between';
-  let label: string = c.betweenPrayers;
-  let title: string = c.betweenPrayers;
-  let window = `${c.nextLabel}: ${next.name} ${next.time}`;
-  let countLabel: string = c.startsIn;
+  let label: string = t('app.betweenPrayers');
+  let title: string = t('app.betweenPrayers');
+  let window = `${t('home.next')}: ${next.name} ${next.time}`;
+  let countLabel: string = t('app.startsIn');
   let progress: number | null = null;
   let currentId: PrayerId | null = null;
   let msLeft = state.msLeft;
 
   if (state.kind === 'prayer') {
     kind = 'prayer';
-    label = c.currentPrayer;
-    title = c[state.id];
+    label = t('app.currentPrayer');
+    title = t(PRAYER_KEY[state.id]);
     window = `${clock(state.start)} - ${clock(state.end)}`;
-    countLabel = c.endsIn;
+    countLabel = t('prayerTimes.endsIn');
     progress = state.elapsed;
     currentId = state.id;
   } else if (state.kind === 'forbidden') {
     kind = 'forbidden';
-    label = c.forbiddenTime;
+    label = t('app.forbiddenTime');
     title = {
-      sunrise: c.forbiddenSunrise,
-      zenith: c.forbiddenZenith,
-      sunset: c.forbiddenSunset,
+      sunrise: t('salatNames.sunrise'),
+      zenith: t('app.forbiddenZenith'),
+      sunset: t('app.forbiddenSunset'),
     }[state.reason];
     window = `${clock(state.start)} - ${clock(state.end)}`;
-    countLabel = c.endsIn;
+    countLabel = t('prayerTimes.endsIn');
     progress = null;
   }
   if (state.kind === 'between') msLeft = nxt.msLeft;
@@ -76,7 +83,7 @@ export function heroInfo(now: Date, c: Copy, lang: Lang, fasting: boolean): Hero
   const mark = fasting ? fastingMark(now) : null;
   const fast = mark
     ? {
-        label: mark.kind === 'suhoor' ? c.suhoorEnds : c.iftar,
+        label: mark.kind === 'suhoor' ? t('app.suhoorEnds') : t('app.iftar'),
         time: clock(mark.at),
         left: n(hm(mark.msLeft)),
       }
@@ -87,7 +94,7 @@ export function heroInfo(now: Date, c: Copy, lang: Lang, fasting: boolean): Hero
     `${label}: ${title}`,
     kind === 'between' ? '' : window,
     `${countLabel} ${countdown}`,
-    `${c.nextLabel}: ${next.name} ${next.time}`,
+    `${t('home.next')}: ${next.name} ${next.time}`,
     fast ? `${fast.label} ${fast.time}` : '',
   ]
     .filter(Boolean)

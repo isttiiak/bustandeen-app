@@ -1,8 +1,8 @@
-import { copyFor } from '@/features/home/copy';
 import { TabPlaceholder } from '@/features/home/screens/TabPlaceholder';
-import { useLang } from '@/features/settings/langStore';
+import { useTranslation } from 'react-i18next';
 
 /** "Today's": special days, their details and the Bustandeen calendar. Designed after Home. */
 export function EventsScreen() {
-  return <TabPlaceholder title={copyFor(useLang()).tabEvents} icon="sun" />;
+  const { t } = useTranslation();
+  return <TabPlaceholder title={t('app.tabEvents')} icon="sun" />;
 }
