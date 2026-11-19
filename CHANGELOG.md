@@ -14,6 +14,7 @@ The app is not released: these are development milestones, not builds for users.
 Core version shipped: none yet (`packages/core` is not synced; prayer data on Home is sample data).
 
 ### Added
+
 - Expo SDK 58 app skeleton with Expo Router, a hello screen, CI (lint, format, typecheck, tests,
   dev-route check, Expo doctor) and a release manifest check (P0, P2-00).
 - Folder structure and ESLint layer rules (P2-01).
@@ -29,8 +30,10 @@ Core version shipped: none yet (`packages/core` is not synced; prayer data on Ho
 - Theme and language are kept across restarts.
 
 ### Changed
+
 - Night is the default theme for new users.
 
 ### Known gaps
+
 - All prayer times, forbidden windows and progress numbers are sample data until Phase 3.
 - No sign-in, sync or server calls yet.
