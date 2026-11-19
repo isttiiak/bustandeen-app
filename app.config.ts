@@ -31,6 +31,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     // Predictive back is the default for apps targeting API 36 (doc 06).
     predictiveBackGestureEnabled: true,
+    // Prebuild adds these to the main manifest, so release builds would request them (D11).
+    // Storage is on doc 05's "never requested" list; the overlay permission is only for the dev menu.
+    blockedPermissions: [
+      'android.permission.READ_EXTERNAL_STORAGE',
+      'android.permission.WRITE_EXTERNAL_STORAGE',
+      'android.permission.SYSTEM_ALERT_WINDOW',
+    ],
   },
   plugins: [
     'expo-router',

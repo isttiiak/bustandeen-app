@@ -44,5 +44,8 @@ jobs:
       - name: Test
         run: npm test
 
+      # Non-blocking (P2-00): Expo doctor goes red whenever Expo ships an SDK patch, even on
+      # unrelated PRs. Read its output; update Expo packages monthly (doc 12).
       - name: Expo doctor
         run: npm run doctor
+        continue-on-error: true
