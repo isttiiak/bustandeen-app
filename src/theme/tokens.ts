@@ -5,11 +5,13 @@
 
 /** Tokens that exist only in the app (no `--c-*` twin on the web): `on-color` is always-white text on
  *  a solid coloured fill (doc 06 section 1). The web-equality test skips these. */
-export const appOnlyTokens = ['on-color'] as const;
+export const appOnlyTokens = ['on-color', 'hero-ink', 'hero-gold', 'hero-danger'] as const;
 
 export type Rgb = readonly [number, number, number];
 
-export const themeNames = ['dark', 'light'] as const;
+export const themeNames = ['dark', 'light', 'night', 'sand'] as const;
+/** The two themes the web has; the rest are app-only palettes (doc 06 section 0, decision O22). */
+export const webThemeNames = ['dark', 'light'] as const;
 export type ThemeName = (typeof themeNames)[number];
 
 const dark = {
@@ -44,6 +46,9 @@ const dark = {
   'reader-soft': [214, 208, 191],
   'reader-note': [216, 208, 184],
   'on-color': [255, 255, 255],
+  'hero-ink': [255, 255, 255],
+  'hero-gold': [226, 190, 120],
+  'hero-danger': [250, 150, 140],
 } as const satisfies Record<string, Rgb>;
 
 export type ColorName = keyof typeof dark;
@@ -80,9 +85,93 @@ const light: Record<ColorName, Rgb> = {
   'reader-soft': [60, 66, 50],
   'reader-note': [60, 66, 50],
   'on-color': [255, 255, 255],
+  'hero-ink': [31, 36, 24],
+  'hero-gold': [122, 88, 12],
+  'hero-danger': [168, 30, 24],
 };
 
-export const tokens: Record<ThemeName, Record<ColorName, Rgb>> = { dark, light };
+// Night (app-only): the dark-first theme. Near-black midnight with a blue undertone (OLED friendly),
+// a deep teal hero and luminous mint and gold accents. Text on the hero is the page ink.
+const night: Record<ColorName, Rgb> = {
+  void: [4, 7, 12],
+  'void-deep': [8, 12, 20],
+  deep: [13, 19, 31],
+  surface: [21, 30, 47],
+  border: [36, 50, 74],
+  hero: [11, 40, 46],
+  emerald: [98, 218, 170],
+  'emerald-dim': [30, 120, 92],
+  gold: [242, 205, 126],
+  'gold-dim': [192, 158, 88],
+  warm: [244, 156, 110],
+  'warm-dim': [196, 124, 84],
+  info: [116, 194, 234],
+  'info-dim': [86, 154, 192],
+  pink: [238, 150, 188],
+  'pink-dim': [196, 120, 154],
+  ink: [233, 240, 248],
+  shade: [0, 0, 0],
+  'danger-soft': [252, 176, 176],
+  danger: [250, 122, 122],
+  'data-good': [98, 218, 170],
+  'data-mid': [242, 205, 126],
+  'data-low': [244, 156, 110],
+  'data-none': [250, 122, 122],
+  'reader-from': [6, 16, 22],
+  'reader-via': [5, 12, 18],
+  'reader-to': [8, 12, 26],
+  'reader-text': [226, 234, 242],
+  'reader-soft': [200, 210, 222],
+  'reader-note': [204, 214, 226],
+  'on-color': [255, 255, 255],
+  'hero-ink': [233, 240, 248],
+  'hero-gold': [242, 205, 126],
+  'hero-danger': [250, 140, 130],
+};
+
+// Sand (app-only): the warm theme with little white. Page and cards are sand and parchment tones,
+// the hero is a deep clay with cream text. Pure white never appears except `on-color`.
+const sand: Record<ColorName, Rgb> = {
+  void: [232, 211, 176],
+  'void-deep': [226, 203, 165],
+  deep: [243, 227, 197],
+  surface: [224, 202, 166],
+  border: [188, 158, 114],
+  hero: [104, 54, 32],
+  emerald: [48, 80, 40],
+  'emerald-dim': [52, 86, 44],
+  gold: [110, 70, 8],
+  'gold-dim': [96, 60, 6],
+  warm: [138, 58, 24],
+  'warm-dim': [120, 50, 20],
+  info: [24, 84, 74],
+  'info-dim': [20, 72, 64],
+  pink: [128, 46, 80],
+  'pink-dim': [112, 40, 70],
+  ink: [34, 20, 10],
+  shade: [90, 64, 36],
+  'danger-soft': [150, 26, 22],
+  danger: [168, 30, 24],
+  'data-good': [70, 124, 56],
+  'data-mid': [196, 140, 30],
+  'data-low': [196, 98, 44],
+  'data-none': [190, 50, 40],
+  'reader-from': [236, 216, 182],
+  'reader-via': [230, 208, 172],
+  'reader-to': [222, 198, 160],
+  'reader-text': [34, 20, 10],
+  'reader-soft': [86, 62, 40],
+  'reader-note': [86, 62, 40],
+  'on-color': [255, 255, 255],
+  'hero-ink': [255, 241, 216],
+  'hero-gold': [250, 214, 128],
+  'hero-danger': [255, 165, 150],
+};
+
+export const tokens: Record<ThemeName, Record<ColorName, Rgb>> = { dark, light, night, sand };
+
+/** True for themes with a light page (status bar icons go dark). */
+export const isLightTheme = (theme: ThemeName): boolean => theme === 'light' || theme === 'sand';
 
 /** `rgb(...)` string for places that need a plain colour (status bar, native views). */
 export function color(theme: ThemeName, name: ColorName): string {

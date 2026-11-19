@@ -111,8 +111,8 @@ const contrast = (a: Rgb, b: Rgb) => {
 };
 
 describe('text tone contrast', () => {
-  const surfaces: ColorName[] = ['void', 'deep', 'surface', 'hero'];
-  for (const theme of ['dark', 'light'] as ThemeName[]) {
+  const surfaces: ColorName[] = ['void', 'deep', 'surface'];
+  for (const theme of Object.keys(tokens) as ThemeName[]) {
     const t = tokens[theme];
     for (const bg of surfaces) {
       it(`${theme} on ${bg}`, () => {
@@ -124,5 +124,12 @@ describe('text tone contrast', () => {
         }
       });
     }
+    it(`${theme}: hero text, and white on the solid primary fill`, () => {
+      expect(contrast(t['hero-ink'], t.hero)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(blend(t['hero-ink'], t.hero, 0.7), t.hero)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(t['hero-gold'], t.hero)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(t['hero-danger'], t.hero)).toBeGreaterThanOrEqual(3);
+      expect(contrast(t['on-color'], t['emerald-dim'])).toBeGreaterThanOrEqual(4.5);
+    });
   }
 });

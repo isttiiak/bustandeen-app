@@ -4,7 +4,7 @@ import { createContext, useContext, useMemo, useSyncExternalStore, type ReactNod
 import { Appearance, useColorScheme, View } from 'react-native';
 
 import { resolveTheme, type ThemeMode } from './resolve';
-import { color, tokenVars, type ColorName, type ThemeName } from './tokens';
+import { color, isLightTheme, tokenVars, type ColorName, type ThemeName } from './tokens';
 
 // The chosen mode lives in a tiny store. It is in memory for now: P2-07 adds encrypted storage and
 // P2-14 syncs it under the web key `bustandeen_theme_mode` (see resolve.ts).
@@ -59,7 +59,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   return (
     <ThemeContext.Provider value={value}>
       <View style={[{ flex: 1 }, style]} className="bg-void">
-        <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
+        <StatusBar style={isLightTheme(theme) ? 'dark' : 'light'} />
         {children}
       </View>
     </ThemeContext.Provider>
