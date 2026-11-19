@@ -14,8 +14,8 @@ export function ArchHero({ children, testID }: { children?: ReactNode; testID?: 
       testID={testID}
       className="overflow-hidden border border-border bg-hero p-5"
       style={{
-        borderTopStartRadius: 88,
-        borderTopEndRadius: 88,
+        borderTopStartRadius: 140,
+        borderTopEndRadius: 140,
         borderBottomStartRadius: 20,
         borderBottomEndRadius: 20,
       }}

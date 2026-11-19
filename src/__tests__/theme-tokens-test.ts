@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { resolveTheme } from '@/theme/resolve';
-import { appOnlyTokens, tokens, tokenVars, type ThemeName } from '@/theme/tokens';
+import { appOnlyTokens, tokens, tokenVars, type ThemeName, webThemeNames } from '@/theme/tokens';
 
 // The web repo is the source of truth for the colours. Locally it sits next to this repo; where it
 // is absent (CI today) the comparison is skipped, and P2-19 adds a checkout of it to CI.
@@ -11,14 +11,14 @@ const WEB_CSS =
   path.resolve(__dirname, '../../../bustandeen/frontend/src/styles/global.css');
 const webAvailable = existsSync(WEB_CSS);
 
-const THEME_SELECTOR: Record<ThemeName, string> = {
+const THEME_SELECTOR: Record<(typeof webThemeNames)[number], string> = {
   dark: "[data-theme='bustandeen']",
   light: "[data-theme='bustandeen-light']",
 };
 // App token name -> web variable name (the app uses cleaner names, doc 06 section 1).
 const WEB_NAME: Record<string, string> = { 'danger-soft': 'red-300', danger: 'red-400' };
 
-function webChannels(css: string, theme: ThemeName): Record<string, string> {
+function webChannels(css: string, theme: (typeof webThemeNames)[number]): Record<string, string> {
   const start = css.indexOf(`${THEME_SELECTOR[theme]} {`);
   const body = css.slice(start, css.indexOf('}', start));
   const out: Record<string, string> = {};
@@ -30,7 +30,7 @@ function webChannels(css: string, theme: ThemeName): Record<string, string> {
 
 (webAvailable ? describe : describe.skip)('tokens equal the web --c-* values', () => {
   const css = webAvailable ? readFileSync(WEB_CSS, 'utf8') : '';
-  for (const theme of ['dark', 'light'] as const) {
+  for (const theme of webThemeNames) {
     it(`${theme}: every token matches`, () => {
       const web = webChannels(css, theme);
       expect(Object.keys(web).length).toBeGreaterThan(20);
@@ -47,8 +47,10 @@ function webChannels(css: string, theme: ThemeName): Record<string, string> {
 });
 
 describe('tokens', () => {
-  it('have the same names in both themes', () => {
-    expect(Object.keys(tokens.light).sort()).toEqual(Object.keys(tokens.dark).sort());
+  it('have the same names in every theme', () => {
+    for (const theme of Object.keys(tokens) as ThemeName[]) {
+      expect(Object.keys(tokens[theme]).sort()).toEqual(Object.keys(tokens.dark).sort());
+    }
   });
 });
 
@@ -60,6 +62,11 @@ describe('resolveTheme', () => {
     expect(resolveTheme('system', { systemScheme: 'light' })).toBe('light');
     expect(resolveTheme('system', { systemScheme: 'dark' })).toBe('dark');
     expect(resolveTheme('system', { systemScheme: null })).toBe('dark');
+  });
+
+  it('app-only modes resolve to their own themes', () => {
+    expect(resolveTheme('warm', { systemScheme: 'dark' })).toBe('warm');
+    expect(resolveTheme('mixed', { systemScheme: 'light' })).toBe('mixed');
   });
 
   it('honours an explicit mode', () => {
