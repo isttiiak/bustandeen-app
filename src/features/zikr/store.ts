@@ -6,6 +6,7 @@ import { PREF_KEYS, prefStore, type PrefStore } from '@/lib/prefs';
 import { DEFAULT_ZIKR, findZikr } from './content';
 import { createZikrRepo, type SqlRunner, type ZikrRepo } from './data/repo';
 import { addDays, zikrToday } from './logic/day';
+import { parseGoal, type ZikrGoal } from './logic/goal';
 import { zikrStreak } from './logic/streak';
 import { clampTarget, parseStoredTarget } from './logic/target';
 
@@ -32,6 +33,8 @@ export interface ZikrSnapshot {
   /** The web's "tasbih mode". */
   targetOn: boolean;
   target: number;
+  /** Daily goal and grace days for the streak and the goal moment (on the phone until sync). */
+  goal: ZikrGoal;
 }
 
 export interface ZikrStoreDeps {
@@ -58,6 +61,7 @@ export function createZikrStore(deps: ZikrStoreDeps) {
     selected: storedSelected && findZikr(storedSelected) ? storedSelected : DEFAULT_ZIKR,
     targetOn: deps.prefs.getString(PREF_KEYS.tasbihMode) === '1',
     target: parseStoredTarget(deps.prefs.getString(PREF_KEYS.tasbihTarget)),
+    goal: parseGoal(deps.prefs.getString(PREF_KEYS.zikrGoal)),
   };
 
   const emit = (next: Partial<ZikrSnapshot>) => {
@@ -65,10 +69,13 @@ export function createZikrStore(deps: ZikrStoreDeps) {
     listeners.forEach((l) => l());
   };
 
+  const streakNow = (day: string, goal: ZikrGoal = snap.goal) =>
+    zikrStreak(totals, day, goal.dailyTarget, goal.graceDays);
+
   const derive = (day: string, rows: Record<string, ZikrCounts>) => {
     const todayTotal = Object.values(rows).reduce((sum, r) => sum + r.count, 0);
     totals.set(day, todayTotal);
-    return { todayTotal, streak: zikrStreak(totals, day) };
+    return { todayTotal, streak: streakNow(day) };
   };
 
   /** Re-reads today (and the history the streak needs) from the database. */
@@ -156,6 +163,13 @@ export function createZikrStore(deps: ZikrStoreDeps) {
       if (!findZikr(type) || type === snap.selected) return;
       deps.prefs.setString(PREF_KEYS.zikrSelected, type);
       emit({ selected: type });
+    },
+
+    /** Saves the daily goal and grace days; the streak follows at once. */
+    setGoal(goal: ZikrGoal): void {
+      const next = parseGoal(JSON.stringify(goal));
+      deps.prefs.setString(PREF_KEYS.zikrGoal, JSON.stringify(next));
+      emit({ goal: next, streak: streakNow(snap.day, next) });
     },
 
     /** `null` turns the target off; a number turns it on (clamped to 1..1000 like the web). */

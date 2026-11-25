@@ -9,6 +9,18 @@ The app is not released: these are development milestones, not builds for users.
 
 ## [Unreleased]
 
+Core version shipped: none yet.
+
+### Added
+
+- Settings on the More tab: theme, language, the daily zikr goal and grace days, a vibration switch and
+  "Reduce animations" (Auto, On, Off), saved on the phone under the website's keys where it has them (D19).
+
+### Changed
+
+- The zikr streak and the daily-goal moment follow the goal set in Settings instead of a fixed 100.
+- The prototype review switches show in development builds only.
+
 ## [1.0.0-alpha.3] - 2026-11-25
 
 Core version shipped: none yet.
