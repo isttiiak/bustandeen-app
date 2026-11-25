@@ -9,6 +9,14 @@ The app is not released: these are development milestones, not builds for users.
 
 ## [Unreleased]
 
+Core version shipped: none yet.
+
+### Added
+
+- A calm error screen when a screen crashes ("Something went wrong", Reload, Go to Home), on every screen so
+  the rest of the app stays usable, in English and Bangla. Crash reports are prepared without any personal
+  data and are not sent until the app connects to the server (D21).
+
 ## [1.0.0-alpha.4] - 2026-11-26
 
 Core version shipped: none yet.
