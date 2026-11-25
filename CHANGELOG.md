@@ -21,6 +21,10 @@ Core version shipped: none yet.
 - The zikr streak and the daily-goal moment follow the goal set in Settings instead of a fixed 100.
 - The prototype review switches show in development builds only.
 
+### Fixed
+
+- The zikr counter's transliteration lost its last word on Android ("Allāhu Akbar" showed as "Allāhu").
+
 ## [1.0.0-alpha.3] - 2026-11-25
 
 Core version shipped: none yet.

@@ -174,7 +174,9 @@ export function ZikrCounterScreen() {
 
         <Enter index={2}>
           <ArchHero>
-            {/* A new zikr fades in (a fade only, so it also suits reduce motion). */}
+            {/* A new zikr fades in (a fade only, so it also suits reduce motion). Each line takes the full
+                width: Android measures shrink-to-fit text narrower than it draws it, and the last word
+                ("Akbar" in "Allāhu Akbar") wrapped onto a line with no room (doc 06 section 3). */}
             <Animated.View
               key={zikr.type}
               entering={FadeIn.duration(duration.slow)}
@@ -186,16 +188,16 @@ export function ZikrCounterScreen() {
                 variant="h2"
                 weight="regular"
                 tone="hero"
-                className="text-center"
+                className="self-stretch text-center"
                 style={{ writingDirection: 'rtl', lineHeight: 44, fontSize: 28 }}
                 accessibilityLanguage="ar"
               >
                 {zikr.arabic}
               </Text>
-              <Text variant="small" tone="heroGold" className="text-center">
+              <Text variant="small" tone="heroGold" className="self-stretch text-center">
                 {zikr.transliteration}
               </Text>
-              <Text variant="small" tone="hero" className="text-center opacity-80">
+              <Text variant="small" tone="hero" className="self-stretch text-center opacity-80">
                 {t(zikr.meaningKey)}
               </Text>
             </Animated.View>
