@@ -15,6 +15,9 @@ Core version shipped: none yet.
 
 - Settings on the More tab: theme, language, the daily zikr goal and grace days, a vibration switch and
   "Reduce animations" (Auto, On, Off), saved on the phone under the website's keys where it has them (D19).
+- The zikr counter now has the website's full list of 11 zikr and its library of 21 adhkār in 6
+  categories, copied from the website by script. Pick a zikr from "My zikr list", remove the ones you do
+  not use (core zikr stay) and add more from the library (D20).
 
 ### Changed
 
