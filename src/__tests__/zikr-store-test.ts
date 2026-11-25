@@ -217,3 +217,29 @@ describe('zikr store: persistence', () => {
     );
   });
 });
+
+describe('zikr store: daily goal', () => {
+  it('uses the saved goal and grace days for the streak, and saves them', async () => {
+    const { store, setNow, prefs } = await setup();
+    const tap = (n: number) => {
+      for (let i = 0; i < n; i++) store.increment();
+    };
+    setNow(at(2026, 11, 22));
+    tap(40);
+    setNow(at(2026, 11, 23));
+    tap(40);
+    setNow(at(2026, 11, 25));
+    store.refreshDay();
+    expect(store.get().streak).toBe(0); // 40 a day is under the default 100
+
+    store.setGoal({ dailyTarget: 33, graceDays: 1 });
+    expect(store.get().streak).toBe(2);
+    expect(prefs.data.get(PREF_KEYS.zikrGoal)).toBe('{"dailyTarget":33,"graceDays":1}');
+
+    store.setGoal({ dailyTarget: 33, graceDays: 0 });
+    expect(store.get().streak).toBe(0); // 2026-11-24 missed, nothing forgiven
+
+    store.setGoal({ dailyTarget: 0, graceDays: 9 });
+    expect(store.get().goal).toEqual({ dailyTarget: 100, graceDays: 1 });
+  });
+});
