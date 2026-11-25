@@ -1,5 +1,13 @@
 import { counterCardValue } from '@/features/home/cardValue';
-import { BUILT_IN_ZIKR, zikrName } from '@/features/zikr/content';
+import {
+  CORE_ZIKR,
+  PREDEFINED_TYPES,
+  ZIKR_LIBRARY,
+  findLibraryItem,
+  zikrDisplay,
+  zikrName,
+} from '@/features/zikr/content';
+import { addZikr, myList, parseNames, removeZikr } from '@/features/zikr/logic/list';
 import { addDays, zikrToday } from '@/features/zikr/logic/day';
 import { zikrStreak } from '@/features/zikr/logic/streak';
 import {
@@ -177,19 +185,77 @@ describe('Home counter card rule', () => {
   });
 });
 
-describe('built-in zikr content', () => {
-  it('is the web default list, with Bangla names in Bangla script', () => {
-    expect(BUILT_IN_ZIKR.map((z) => z.type)).toEqual([
+describe('zikr content (generated from the website)', () => {
+  const t = (key: string) => `t:${key}`;
+
+  it("has the web's 11 built-in zikr, 6 of them core, and the 6-category library", () => {
+    expect(PREDEFINED_TYPES).toHaveLength(11);
+    expect(PREDEFINED_TYPES.slice(0, 4)).toEqual([
       'SubhanAllah',
       'Alhamdulillah',
       'Allahu Akbar',
       'La ilaha illallah',
     ]);
-    for (const z of BUILT_IN_ZIKR) {
-      expect(z.arabic).toMatch(/^[؀-ۿ\s]+$/);
-      expect(z.nameBn).toMatch(/[ঀ-৿]/);
+    expect(CORE_ZIKR).toHaveLength(6);
+    expect(ZIKR_LIBRARY.map((c) => c.id)).toEqual([
+      'tasbih',
+      'istighfar',
+      'salawat',
+      'kalimat',
+      'asma',
+      'protection',
+    ]);
+    for (const item of ZIKR_LIBRARY.flatMap((c) => c.items)) {
+      expect(item.arabic).toMatch(/[\u0600-\u06FF]/);
+      if (item.meaningBn) expect(item.meaningBn).toMatch(/[\u0980-\u09FF]/);
     }
-    expect(zikrName('Allahu Akbar', 'en')).toBe('Allahu Akbar');
+  });
+
+  it('shows a built-in zikr from its own meaning, a library zikr from the library', () => {
+    expect(zikrDisplay('Allahu Akbar', 'en', t)).toEqual({
+      arabic: 'اللَّهُ أَكْبَرُ',
+      transliteration: 'Allāhu Akbar',
+      meaning: 't:zikr.meanings.allahuAkbar',
+    });
+    const tahlil = findLibraryItem('La ilaha illallahu wahdahu la sharika lah')!;
+    const shown = zikrDisplay(tahlil.name, 'bn', t)!;
+    expect(shown.arabic).toBe(tahlil.shortArabic ?? tahlil.arabic);
+    expect(shown.meaning).toBe(tahlil.meaningBn);
+    expect(zikrDisplay('Not a zikr', 'en', t)).toBeNull();
     expect(zikrName('Allahu Akbar', 'bn')).toBe('আল্লাহু আকবার');
+    expect(zikrName('Allahu Akbar', 'en')).toBe('Allahu Akbar');
+  });
+});
+
+describe('zikr list (web rules)', () => {
+  const empty = { hidden: [], added: [] };
+
+  it('starts with the 11 built-in zikr in order', () => {
+    expect(myList(empty)).toEqual([...PREDEFINED_TYPES]);
+  });
+
+  it('removes a built-in, but never a core one, and brings it back on add', () => {
+    const removed = removeZikr(empty, 'Durud Ibrahim');
+    expect(myList(removed)).not.toContain('Durud Ibrahim');
+    expect(removeZikr(removed, 'SubhanAllah')).toBe(removed); // core
+    expect(myList(addZikr(removed, 'Durud Ibrahim'))).toContain('Durud Ibrahim');
+  });
+
+  it('a hidden core zikr still shows (as the web re-adds it)', () => {
+    expect(myList({ hidden: ['Ayatul Kursi'], added: [] })).toContain('Ayatul Kursi');
+  });
+
+  it('adds library zikr at the end, once, and ignores unknown names', () => {
+    const one = addZikr(empty, 'Ya Hayyu Ya Qayyum');
+    expect(myList(one).at(-1)).toBe('Ya Hayyu Ya Qayyum');
+    expect(addZikr(one, 'ya hayyu ya qayyum')).toBe(one);
+    expect(addZikr(one, 'Made up')).toBe(one);
+    expect(myList(removeZikr(one, 'Ya Hayyu Ya Qayyum'))).toEqual([...PREDEFINED_TYPES]);
+  });
+
+  it('reads stored name lists safely', () => {
+    expect(parseNames('["A","",3]')).toEqual(['A']);
+    expect(parseNames('nope')).toEqual([]);
+    expect(parseNames(undefined)).toEqual([]);
   });
 });

@@ -16,8 +16,9 @@ jest.mock('expo-haptics', () => ({
   NotificationFeedbackType: { Success: 'success', Warning: 'warning' },
 }));
 
+const mockPush = jest.fn();
 jest.mock('expo-router', () => ({
-  useRouter: () => ({ back: jest.fn(), canGoBack: () => true, replace: jest.fn() }),
+  useRouter: () => ({ back: jest.fn(), canGoBack: () => true, replace: jest.fn(), push: mockPush }),
   useFocusEffect: (effect: () => void) => mockUseEffect(effect, [effect]),
 }));
 
@@ -99,9 +100,7 @@ describe('Zikr counter screen', () => {
     expect(screen.getByRole('button', { name: 'Back' })).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: 'No target' })).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: /^Count: / })).toBeOnTheScreen();
-    for (const name of ['SubhanAllah', 'Alhamdulillah', 'Allahu Akbar', 'La ilaha illallah']) {
-      expect(screen.getByRole('button', { name })).toBeOnTheScreen();
-    }
+    expect(screen.getByRole('button', { name: /, Change…$/ })).toBeOnTheScreen();
   });
 
   it('gives a haptic for each kind of action, and none when there is nothing to undo', async () => {
@@ -139,5 +138,30 @@ describe('Zikr counter screen', () => {
     jest.clearAllMocks();
     await tap(); // only once a day
     expect(Haptics.notificationAsync).not.toHaveBeenCalled();
+  });
+
+  it('picks a zikr from My zikr list and opens the library from it', async () => {
+    await renderCounter();
+    await fireEvent.press(screen.getByTestId('zikr-picker'));
+    expect(screen.getByText('My zikr list')).toBeOnTheScreen();
+    expect(screen.getAllByRole('radio').length).toBeGreaterThanOrEqual(11);
+    await fireEvent.press(screen.getByTestId('zikr-option-Durud Ibrahim'));
+    expect(zikrStore().get().selected).toBe('Durud Ibrahim');
+
+    await fireEvent.press(screen.getByTestId('zikr-picker'));
+    await fireEvent.press(screen.getByTestId('zikr-open-library'));
+    expect(mockPush).toHaveBeenCalledWith('/zikr/library');
+  });
+
+  it('removes a zikr after a confirm; core zikr are always on', async () => {
+    await renderCounter();
+    await fireEvent.press(screen.getByTestId('zikr-picker'));
+    await fireEvent.press(screen.getByRole('button', { name: 'Edit' }));
+    expect(screen.getAllByText('Always on')).toHaveLength(6);
+    await fireEvent.press(screen.getByRole('button', { name: 'Remove Durud Ibrahim' }));
+    expect(screen.getByText('Remove "Durud Ibrahim"?')).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: 'Yes, remove' }));
+    expect(zikrStore().get().list).not.toContain('Durud Ibrahim');
+    expect(zikrStore().get().selected).toBe('SubhanAllah');
   });
 });
