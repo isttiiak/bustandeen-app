@@ -184,5 +184,11 @@
     "addToList": "Add to list",
     "added": "\"{{name}}\" added to your counter",
     "inList": "In your list"
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "body": "An unexpected error interrupted the app. Your worship data is safe. Try reloading.",
+    "reload": "Reload",
+    "home": "Go to Home"
   }
 }

@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
 
+import { ErrorScreen } from '@/features/errors/ErrorScreen';
 import type { IconName } from '@/ui/Icon';
 import { TabBar } from '@/ui/TabBar';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +12,9 @@ const ICONS: Record<string, IconName> = {
   events: 'sun',
   more: 'dots',
 };
+
+/** A crash inside a tab shows the error screen there. */
+export const ErrorBoundary = ErrorScreen;
 
 export default function TabsLayout() {
   const { t } = useTranslation();
