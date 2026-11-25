@@ -1,7 +1,7 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { useLang } from '@/features/settings/langStore';
@@ -10,7 +10,6 @@ import { ArchHero } from '@/ui/Art';
 import { IconButton } from '@/ui/Button';
 import { haptic } from '@/ui/haptics';
 import { Icon, type IconName } from '@/ui/Icon';
-import { Chip } from '@/ui/Inputs';
 import { duration, useEntering } from '@/ui/motion';
 import { Dialog, useToast } from '@/ui/Overlays';
 import { PressableScale } from '@/ui/PressableScale';
@@ -19,7 +18,8 @@ import { Text } from '@/ui/Text';
 
 import { CounterDial, type DialBeat } from '../components/CounterDial';
 import { TargetSheet } from '../components/TargetSheet';
-import { BUILT_IN_ZIKR, findZikr, zikrName } from '../content';
+import { ZikrListSheet } from '../components/ZikrListSheet';
+import { DEFAULT_ZIKR, zikrDisplay, zikrName } from '../content';
 import { reachesGoal } from '../logic/goal';
 import { completesSet, isMilestone, setProgress } from '../logic/target';
 import { countsOf, useZikr, zikrStore } from '../store';
@@ -33,8 +33,13 @@ export function ZikrCounterScreen() {
   const snap = useZikr(store);
   const num = (n: number) => digits(n, lang);
 
-  const zikr = findZikr(snap.selected) ?? BUILT_IN_ZIKR[0]!;
-  const name = zikrName(zikr.type, lang);
+  const type = snap.selected || DEFAULT_ZIKR;
+  const zikr = { type, ...zikrDisplay(type, lang, t) };
+  const name = zikrName(type, lang);
+  const [picker, setPicker] = useState(false);
+  const todayCounts = Object.fromEntries(
+    Object.entries(snap.rows).map(([k, v]) => [k, v.count])
+  ) as Record<string, number>;
   const { count, shown } = countsOf(snap, zikr.type);
 
   // The target set is session state, as on the web: it starts again when the screen opens and when
@@ -155,21 +160,25 @@ export function ZikrCounterScreen() {
         </Enter>
 
         <Enter index={1}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="grow-0"
-            contentContainerClassName="gap-2 px-1 py-2"
+          {/* One button opens "My zikr list" (the web's dropdown); the list can be long. */}
+          <PressableScale
+            haptic="select"
+            onPress={() => setPicker(true)}
+            accessibilityRole="button"
+            accessibilityLabel={`${name}, ${t('zikr.change')}`}
+            accessibilityHint={t('app.zikr.listCount', { count: num(snap.list.length) })}
+            className="min-h-12 flex-row items-center gap-3 rounded-control border border-border bg-surface/50 px-4 py-2"
+            testID="zikr-picker"
           >
-            {BUILT_IN_ZIKR.map((z) => (
-              <Chip
-                key={z.type}
-                label={zikrName(z.type, lang)}
-                selected={z.type === zikr.type}
-                onPress={() => onSelect(z.type)}
-              />
-            ))}
-          </ScrollView>
+            <View className="flex-1">
+              <Text weight="bold">{name}</Text>
+              <Text variant="small" tone="muted">
+                {t('app.zikr.changeHint')} ·{' '}
+                {t('app.zikr.listCount', { count: num(snap.list.length) })}
+              </Text>
+            </View>
+            <Icon name="chevron-down" size={20} color="gold" />
+          </PressableScale>
         </Enter>
 
         <Enter index={2}>
@@ -192,13 +201,13 @@ export function ZikrCounterScreen() {
                 style={{ writingDirection: 'rtl', lineHeight: 44, fontSize: 28 }}
                 accessibilityLanguage="ar"
               >
-                {zikr.arabic}
+                {zikr.arabic ?? ''}
               </Text>
               <Text variant="small" tone="heroGold" className="self-stretch text-center">
-                {zikr.transliteration}
+                {zikr.transliteration ?? ''}
               </Text>
               <Text variant="small" tone="hero" className="self-stretch text-center opacity-80">
-                {t(zikr.meaningKey)}
+                {zikr.meaning ?? ''}
               </Text>
             </Animated.View>
           </ArchHero>
@@ -238,6 +247,17 @@ export function ZikrCounterScreen() {
         </Enter>
       </View>
 
+      <ZikrListSheet
+        visible={picker}
+        onClose={() => setPicker(false)}
+        lang={lang}
+        list={snap.list}
+        selected={type}
+        todayCounts={todayCounts}
+        onSelect={onSelect}
+        onRemove={(n) => store.removeFromList(n)}
+        onOpenLibrary={() => router.push('/zikr/library')}
+      />
       <TargetSheet
         visible={sheet}
         onClose={() => setSheet(false)}

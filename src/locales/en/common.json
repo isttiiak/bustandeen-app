@@ -63,7 +63,13 @@
       "customHint": "From 1 to 1000",
       "useCustom": "Use",
       "storageError": "Counts can't be saved on this phone right now.",
-      "tapHint": "Tap anywhere here to count"
+      "tapHint": "Tap anywhere here to count",
+      "changeHint": "Tap to change",
+      "listCount": "{{count}} in your list",
+      "addFromLibrary": "Add from library",
+      "done": "Done",
+      "removeNote": "Its counts stay. You can add it back from the library.",
+      "selected": "Selected"
     },
     "settings": {
       "appearanceNote": "Choose how Bustandeen looks.",
@@ -103,7 +109,9 @@
     "reduceMotionDetail": "Tone down motion effects and celebrations. Auto follows your phone's setting.",
     "reduceMotionAuto": "Auto",
     "reduceMotionOn": "On",
-    "reduceMotionOff": "Off"
+    "reduceMotionOff": "Off",
+    "zikrLibrary": "Zikr library",
+    "zikrLibrarySubtitle": "Ṣalawāt, istighfār, the weighty words: verified adhkār to add to your counter"
   },
   "proto": {
     "prototype": "Design prototype: sample data, nothing is saved",
@@ -133,7 +141,13 @@
       "subhanallah": "Glory be to Allah: praising His perfection above all imperfections",
       "alhamdulillah": "All praise belongs to Allah: gratitude for every blessing, seen and unseen",
       "allahuAkbar": "Allah is the Greatest: His greatness transcends all of creation",
-      "laIlahaIllallah": "There is no god but Allah: the declaration of Tawhid, key to Jannah"
+      "laIlahaIllallah": "There is no god but Allah: the declaration of Tawhid, key to Jannah",
+      "astaghfirullah": "I seek forgiveness from Allah. The Prophet ﷺ sought forgiveness 70–100 times a day",
+      "subhanallahWaBihamdihi": "Glory be to Allah and all praise is His: light on the tongue, heavy on the scales, beloved to the Most Merciful",
+      "laHawla": "There is no power and no strength except with Allah: a treasure from the treasures of Jannah",
+      "fourBeloved": "The four most beloved words to Allah. Whoever says them, sins fall as leaves fall from a dry tree",
+      "ayatulKursi": "The Verse of the Throne, the greatest verse in the Quran. Recite after every prayer; nothing prevents entry to Jannah except death",
+      "durudIbrahim": "Salutations upon the Prophet ﷺ and his family. Allah sends tenfold blessings upon the one who sends one salutation"
     },
     "countBtn": "Count",
     "resetBtn": "Reset",
@@ -144,7 +158,15 @@
     "pageTitle": "Zikr Counter",
     "a11y": {
       "goalReached": "Daily goal reached"
-    }
+    },
+    "myZikrList": "My zikr list",
+    "alwaysOn": "Always on",
+    "removeBtn": "Remove",
+    "removeAriaLabel": "Remove {{name}}",
+    "removeConfirmTitle": "Remove \"{{name}}\"?",
+    "yesRemove": "Yes, remove",
+    "change": "Change…",
+    "editBtn": "Edit"
   },
   "zikrAnalytics": {
     "setDailyGoal": "Set Daily Goal",
@@ -157,5 +179,10 @@
     "grace3": "3 days",
     "graceDaysNote": "How many consecutive missed days your streak forgives before resetting.",
     "saveGoal": "Save Goal"
+  },
+  "zikrLibrary": {
+    "addToList": "Add to list",
+    "added": "\"{{name}}\" added to your counter",
+    "inList": "In your list"
   }
 }

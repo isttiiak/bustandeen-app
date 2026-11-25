@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
@@ -56,6 +57,7 @@ export function MoreScreen() {
   const prefs = useUiPrefs();
   const zikr = useZikr();
   const [goalOpen, setGoalOpen] = useState(false);
+  const router = useRouter();
   const num = (n: number) => digits(n, lang);
   const { t } = useTranslation();
   const modes: { value: ThemeMode; label: string }[] = [
@@ -127,6 +129,13 @@ export function MoreScreen() {
         title={t('zikrAnalytics.graceDays')}
         value={num(zikr.goal.graceDays)}
         onPress={() => setGoalOpen(true)}
+      />
+      <ValueRow
+        title={t('settings.zikrLibrary')}
+        detail={t('settings.zikrLibrarySubtitle')}
+        value={digits(zikr.list.length, lang)}
+        onPress={() => router.push('/zikr/library')}
+        testID="settings-library"
       />
 
       <SectionTitle icon="info">{t('settings.accessibilitySection')}</SectionTitle>
