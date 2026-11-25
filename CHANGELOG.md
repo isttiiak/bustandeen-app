@@ -9,6 +9,8 @@ The app is not released: these are development milestones, not builds for users.
 
 ## [Unreleased]
 
+## [1.0.0-alpha.3] - 2026-11-25
+
 Core version shipped: none yet.
 
 ### Added
