@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { I18nProvider } from '@/features/settings/I18nProvider';
 import { ThemeProvider } from '@/theme/ThemeProvider';
+import { MotionPreference } from '@/ui/motion';
 import { ToastProvider } from '@/ui/Overlays';
 
 // react-native-css-interop (NativeWind, D14) reads React Native's deprecated `ImageBackground` when it
@@ -19,6 +20,7 @@ export default function RootLayout() {
       <I18nProvider>
         <ThemeProvider>
           <ToastProvider>
+            <MotionPreference />
             <Stack
               screenOptions={{
                 headerShown: false,

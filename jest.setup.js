@@ -42,6 +42,8 @@ jest.mock('react-native-reanimated', () => {
     useAnimatedStyle: (fn) => fn(),
     useAnimatedProps: (fn) => fn(),
     useReducedMotion: () => false,
+    ReduceMotion: { System: 'system', Always: 'always', Never: 'never' },
+    ReducedMotionConfig: () => null,
     withTiming: (to, _config, cb) => {
       if (cb) cb(true);
       return to;
