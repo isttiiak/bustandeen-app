@@ -57,6 +57,7 @@ jest.mock('react-native-reanimated', () => {
     FadeIn: chain(),
     FadeOut: chain(),
     FadeInDown: chain(),
+    ZoomIn: chain(),
   };
 });
 

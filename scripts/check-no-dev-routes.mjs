@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 // One marker per dev-only screen. Add the marker string when a new dev route is added.
-const MARKERS = ['Design gallery', 'Storage spike (G7)'];
+const MARKERS = ['Design gallery', 'Storage spike (G7)', 'Crash test (dev)'];
 
 const out = mkdtempSync(join(tmpdir(), 'bustandeen-export-'));
 try {
