@@ -3,10 +3,11 @@ import { AppState } from 'react-native';
 
 import { PREF_KEYS, prefStore, type PrefStore } from '@/lib/prefs';
 
-import { DEFAULT_ZIKR, findZikr } from './content';
+import { DEFAULT_ZIKR } from './content';
 import { createZikrRepo, type SqlRunner, type ZikrRepo } from './data/repo';
 import { addDays, zikrToday } from './logic/day';
 import { parseGoal, type ZikrGoal } from './logic/goal';
+import { addZikr, inList, myList, parseNames, removeZikr, type ListState } from './logic/list';
 import { zikrStreak } from './logic/streak';
 import { clampTarget, parseStoredTarget } from './logic/target';
 
@@ -35,6 +36,8 @@ export interface ZikrSnapshot {
   target: number;
   /** Daily goal and grace days for the streak and the goal moment (on the phone until sync). */
   goal: ZikrGoal;
+  /** The user's zikr list, in order (built-in, then added from the library). */
+  list: readonly string[];
 }
 
 export interface ZikrStoreDeps {
@@ -51,17 +54,26 @@ export function createZikrStore(deps: ZikrStoreDeps) {
   let opening: Promise<void> | null = null;
   let totals = new Map<string, number>();
 
+  let listState: ListState = {
+    hidden: parseNames(deps.prefs.getString(PREF_KEYS.zikrHidden)),
+    added: parseNames(deps.prefs.getString(PREF_KEYS.zikrAdded)),
+  };
   const storedSelected = deps.prefs.getString(PREF_KEYS.zikrSelected);
+  const initialList = myList(listState);
   let snap: ZikrSnapshot = {
     status: 'idle',
     day: zikrToday(new Date(deps.now())),
     rows: {},
     todayTotal: 0,
     streak: 0,
-    selected: storedSelected && findZikr(storedSelected) ? storedSelected : DEFAULT_ZIKR,
+    selected:
+      storedSelected && inList(listState, storedSelected)
+        ? storedSelected
+        : (initialList[0] ?? DEFAULT_ZIKR),
     targetOn: deps.prefs.getString(PREF_KEYS.tasbihMode) === '1',
     target: parseStoredTarget(deps.prefs.getString(PREF_KEYS.tasbihTarget)),
     goal: parseGoal(deps.prefs.getString(PREF_KEYS.zikrGoal)),
+    list: initialList,
   };
 
   const emit = (next: Partial<ZikrSnapshot>) => {
@@ -93,6 +105,13 @@ export function createZikrStore(deps: ZikrStoreDeps) {
     if (!repo || zikrToday(new Date(deps.now())) === snap.day) return false;
     load();
     return true;
+  };
+
+  const saveList = (next: ListState) => {
+    listState = next;
+    deps.prefs.setString(PREF_KEYS.zikrHidden, JSON.stringify(next.hidden));
+    deps.prefs.setString(PREF_KEYS.zikrAdded, JSON.stringify(next.added));
+    emit({ list: myList(next) });
   };
 
   const write = (type: string, counts: ZikrCounts) => {
@@ -160,9 +179,30 @@ export function createZikrStore(deps: ZikrStoreDeps) {
     },
 
     select(type: string): void {
-      if (!findZikr(type) || type === snap.selected) return;
+      if (!inList(listState, type) || type === snap.selected) return;
       deps.prefs.setString(PREF_KEYS.zikrSelected, type);
       emit({ selected: type });
+    },
+
+    /** Adds a zikr from the library (or brings back a removed built-in). True when the list changed. */
+    addToList(name: string): boolean {
+      const next = addZikr(listState, name);
+      if (next === listState) return false;
+      saveList(next);
+      return true;
+    },
+
+    /** Removes a zikr from the list (its counts stay). Core zikr cannot be removed. */
+    removeFromList(name: string): boolean {
+      const next = removeZikr(listState, name);
+      if (next === listState) return false;
+      saveList(next);
+      if (!inList(next, snap.selected)) {
+        const first = snap.list[0] ?? DEFAULT_ZIKR;
+        deps.prefs.setString(PREF_KEYS.zikrSelected, first);
+        emit({ selected: first });
+      }
+      return true;
     },
 
     /** Saves the daily goal and grace days; the streak follows at once. */

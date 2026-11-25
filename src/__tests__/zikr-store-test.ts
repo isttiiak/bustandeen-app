@@ -243,3 +243,30 @@ describe('zikr store: daily goal', () => {
     expect(store.get().goal).toEqual({ dailyTarget: 100, graceDays: 1 });
   });
 });
+
+describe('zikr store: the list', () => {
+  it('adds and removes zikr, keeps counts, and moves off a removed selection', async () => {
+    const { store, prefs } = await setup();
+    expect(store.get().list).toHaveLength(11);
+    expect(store.addToList("HasbunAllahu wa ni'mal-wakil")).toBe(true);
+    store.select("HasbunAllahu wa ni'mal-wakil");
+    store.increment();
+    expect(store.get().todayTotal).toBe(1);
+    expect(prefs.data.get(PREF_KEYS.zikrAdded)).toBe('["HasbunAllahu wa ni\'mal-wakil"]');
+
+    expect(store.removeFromList("HasbunAllahu wa ni'mal-wakil")).toBe(true);
+    expect(store.get().selected).toBe('SubhanAllah');
+    expect(store.get().todayTotal).toBe(1); // counts stay
+
+    expect(store.removeFromList('SubhanAllah')).toBe(false); // core
+    expect(store.removeFromList('Durud Ibrahim')).toBe(true);
+    expect(prefs.data.get(PREF_KEYS.zikrHidden)).toBe('["Durud Ibrahim"]');
+    expect(store.get().list).not.toContain('Durud Ibrahim');
+  });
+
+  it('cannot select a zikr that is not in the list', async () => {
+    const { store } = await setup();
+    store.select('Ya Hayyu Ya Qayyum');
+    expect(store.get().selected).toBe('SubhanAllah');
+  });
+});
