@@ -17,6 +17,10 @@ export const PREF_KEYS = {
   tasbihTarget: 'bustandeen_tasbih_target',
   /** App-only: the zikr the counter last showed (the web keeps it in its zikr store, not synced). */
   zikrSelected: 'bustandeen_app_zikr_selected',
+  /** Web key (device only on the web too): built-in zikr the user removed, a JSON array of names. */
+  zikrHidden: 'bustandeen_zikr_hidden',
+  /** App-only until zikr sync: library zikr the user added (server zikr types on the web). */
+  zikrAdded: 'bustandeen_app_zikr_added',
   /** App-only until zikr sync: `{ dailyTarget, graceDays }` (server data on the web, `ZikrGoal`). */
   zikrGoal: 'bustandeen_app_zikr_goal',
 } as const;
