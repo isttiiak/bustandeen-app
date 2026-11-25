@@ -14,6 +14,8 @@ import { Icon, type IconName } from '@/ui/Icon';
 import { useReduceMotion } from '@/ui/motion';
 import { Text } from '@/ui/Text';
 
+import { counterCardValue } from '../cardValue';
+
 /** Shell of a small Home card: icon and title on top, the value below. The whole card is a button. */
 export function QuickCard({
   icon,
@@ -103,14 +105,15 @@ export function CounterValue({
   word: string;
   num: (n: number) => string;
 }) {
-  if (count > 0 || streak > 0) {
-    const isCount = count > 0;
+  const shown = counterCardValue(count, streak);
+  if (shown.kind !== 'word') {
+    const isCount = shown.kind === 'count';
     return (
       <View>
         <View className="flex-row items-center gap-1.5">
           {!isCount ? <Icon name="fire" size={22} color="warm" /> : null}
           <Text variant="display" tabular>
-            {num(isCount ? count : streak)}
+            {num(shown.value)}
           </Text>
         </View>
         <Text variant="caption" tone="muted">

@@ -8,6 +8,13 @@ export const PREF_KEYS = {
   themeMode: 'bustandeen_theme_mode',
   appThemeMode: 'bustandeen_app_theme_mode',
   lang: 'bustandeen_lang',
+  /** Web key: `'0'` turns haptics off; anything else is on (web `useUiStore.ts`). */
+  vibration: 'bustandeen_vibration',
+  /** Web keys for the zikr target ("tasbih mode"): `'1'` on; the target as a whole number string. */
+  tasbihMode: 'bustandeen_tasbih_mode',
+  tasbihTarget: 'bustandeen_tasbih_target',
+  /** App-only: the zikr the counter last showed (the web keeps it in its zikr store, not synced). */
+  zikrSelected: 'bustandeen_app_zikr_selected',
 } as const;
 
 /** The small part of the key-value store the preference code needs; a fake in unit tests. */

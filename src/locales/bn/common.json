@@ -3,7 +3,9 @@
     "today": "আজ",
     "streak": "ধারাবাহিকতা",
     "days": "দিন",
-    "reset": "রিসেট"
+    "reset": "রিসেট",
+    "cancel": "বাতিল",
+    "back": "ফিরুন"
   },
   "app": {
     "tabSalat": "সালাত",
@@ -48,7 +50,21 @@
     "daysThisMonth": "এই মাসে দিন",
     "tapToCount": "গুনতে ট্যাপ করুন",
     "closeSheet": "বন্ধ করুন",
-    "openCard": "{{name}} খুলুন"
+    "openCard": "{{name}} খুলুন",
+    "zikr": {
+      "undo": "এক কমান",
+      "resetNote": "কাউন্টার ০ থেকে শুরু হবে। আজকের {{count}} গণনা থেকে যাবে।",
+      "noTarget": "লক্ষ্য নেই",
+      "targetChip": "লক্ষ্য {{count}}",
+      "ofTargetToday": "{{target}}-এর মধ্যে {{done}} · আজ {{today}}",
+      "todayCount": "আজ {{count}}",
+      "left": "বাকি",
+      "countLabel": "{{name}}: {{count}}",
+      "customHint": "১ থেকে ১০০০",
+      "useCustom": "ব্যবহার করুন",
+      "storageError": "এই মুহূর্তে এই ফোনে গণনা সংরক্ষণ করা যাচ্ছে না।",
+      "tapHint": "গণনা করতে এখানে যেকোনো জায়গায় ট্যাপ করুন"
+    }
   },
   "home": {
     "quick": {
@@ -97,5 +113,23 @@
   },
   "nav": {
     "home": "হোম"
+  },
+  "zikr": {
+    "meanings": {
+      "subhanallah": "আল্লাহর মহিমা ঘোষণা: সব ত্রুটির ঊর্ধ্বে তাঁর পরিপূর্ণতার প্রশংসা",
+      "alhamdulillah": "সব প্রশংসা আল্লাহর: দৃশ্য ও অদৃশ্য প্রতিটি নিয়ামতের জন্য কৃতজ্ঞতা",
+      "allahuAkbar": "আল্লাহ সর্বশ্রেষ্ঠ: তাঁর মহত্ব সব সৃষ্টিকে ছাড়িয়ে যায়",
+      "laIlahaIllallah": "আল্লাহ ছাড়া কোনো ইলাহ নেই: তাওহীদের ঘোষণা, জান্নাতের চাবি"
+    },
+    "countBtn": "গণনা",
+    "resetBtn": "রিসেট",
+    "resetConfirmTitle": "{{name}} কাউন্টার রিসেট করবেন?",
+    "tasbihSetComplete": "{{count}} সম্পন্ন, সেট সম্পূর্ণ",
+    "tasbihTargetLabel": "লক্ষ্য",
+    "tasbihCustom": "কাস্টম",
+    "pageTitle": "যিকির কাউন্টার",
+    "a11y": {
+      "goalReached": "আজকের লক্ষ্য পূর্ণ হয়েছে"
+    }
   }
 }

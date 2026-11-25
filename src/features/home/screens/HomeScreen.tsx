@@ -1,9 +1,10 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 import { setLang, useLang, type Lang } from '@/features/settings/langStore';
+import { useZikr, zikrStore } from '@/features/zikr/store';
 import { setThemeMode } from '@/theme/ThemeProvider';
 import { themeModes, type ThemeMode } from '@/theme/resolve';
 import { Chip } from '@/ui/Inputs';
@@ -16,7 +17,7 @@ import { HeroFrame } from '../components/HeroFrame';
 import { ArchInfo } from '../components/HeroParts';
 import { PrayerTimeline } from '../components/PrayerTimeline';
 import { CounterValue, QuickCard, TrackerValue } from '../components/QuickCards';
-import { FastingSheet, TimesSheet, TrackerSheet, ZikrSheet } from '../components/Sheets';
+import { FastingSheet, TimesSheet, TrackerSheet } from '../components/Sheets';
 import { SkyHero } from '../components/SkyHero';
 import { VerseCard } from '../components/VerseCard';
 import { heroInfo } from '../heroInfo';
@@ -48,7 +49,7 @@ function hijriText(d: Date, lang: Lang): string | null {
   }
 }
 
-type SheetKey = 'times' | 'tracker' | 'zikr' | 'fasting' | null;
+type SheetKey = 'times' | 'tracker' | 'fasting' | null;
 
 function HomeBody({ active }: { active: boolean }) {
   const lang = useLang();
@@ -61,7 +62,13 @@ function HomeBody({ active }: { active: boolean }) {
   const [done, setDone] = useState<Record<string, boolean>>(
     active ? { fajr: true, dhuhr: true } : {}
   );
-  const [zikr, setZikr] = useState(active ? 33 : 0);
+  // Real zikr data (local, task P2-zikr-counter); the other cards are still samples.
+  const zikr = useZikr();
+  useFocusEffect(
+    useCallback(() => {
+      zikrStore().refreshDay();
+    }, [])
+  );
   const [sheet, setSheet] = useState<SheetKey>(null);
 
   const num = (n: number | string) => digits(n, lang);
@@ -196,12 +203,12 @@ function HomeBody({ active }: { active: boolean }) {
               icon="counter"
               title={t('home.quick.zikr')}
               label={lbl(t('home.quick.zikr'))}
-              calling={zikr === 0 && !active}
-              onPress={open('zikr')}
+              calling={zikr.todayTotal === 0 && zikr.streak === 0}
+              onPress={() => router.push('/zikr')}
             >
               <CounterValue
-                count={zikr}
-                streak={active ? 9 : 0}
+                count={zikr.todayTotal}
+                streak={zikr.streak}
                 countLabel={t('app.todayWord')}
                 streakLabel={t('app.dayStreak')}
                 word={t('home.quick.zikr')}
@@ -266,14 +273,6 @@ function HomeBody({ active }: { active: boolean }) {
         done={done}
         onToggle={toggle}
         nextId={info.next.id}
-      />
-      <ZikrSheet
-        visible={sheet === 'zikr'}
-        onClose={() => setSheet(null)}
-
-        num={num}
-        count={zikr}
-        setCount={setZikr}
       />
       <FastingSheet visible={sheet === 'fasting'} onClose={() => setSheet(null)} num={num} />
     </Screen>
