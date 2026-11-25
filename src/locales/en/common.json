@@ -3,7 +3,9 @@
     "today": "Today",
     "streak": "Streak",
     "days": "days",
-    "reset": "Reset"
+    "reset": "Reset",
+    "cancel": "Cancel",
+    "back": "Back"
   },
   "app": {
     "tabSalat": "Salat",
@@ -48,7 +50,21 @@
     "daysThisMonth": "days this month",
     "tapToCount": "Tap to count",
     "closeSheet": "Close",
-    "openCard": "Open {{name}}"
+    "openCard": "Open {{name}}",
+    "zikr": {
+      "undo": "Undo",
+      "resetNote": "The counter goes back to 0. Today's count of {{count}} stays.",
+      "noTarget": "No target",
+      "targetChip": "Target {{count}}",
+      "ofTargetToday": "{{done}} of {{target}} · today {{today}}",
+      "todayCount": "Today {{count}}",
+      "left": "left",
+      "countLabel": "{{name}}: {{count}}",
+      "customHint": "From 1 to 1000",
+      "useCustom": "Use",
+      "storageError": "Counts can't be saved on this phone right now.",
+      "tapHint": "Tap anywhere here to count"
+    }
   },
   "home": {
     "quick": {
@@ -97,5 +113,23 @@
   },
   "nav": {
     "home": "Home"
+  },
+  "zikr": {
+    "meanings": {
+      "subhanallah": "Glory be to Allah: praising His perfection above all imperfections",
+      "alhamdulillah": "All praise belongs to Allah: gratitude for every blessing, seen and unseen",
+      "allahuAkbar": "Allah is the Greatest: His greatness transcends all of creation",
+      "laIlahaIllallah": "There is no god but Allah: the declaration of Tawhid, key to Jannah"
+    },
+    "countBtn": "Count",
+    "resetBtn": "Reset",
+    "resetConfirmTitle": "Reset {{name}} counter?",
+    "tasbihSetComplete": "{{count}} done, set complete",
+    "tasbihTargetLabel": "Target",
+    "tasbihCustom": "Custom",
+    "pageTitle": "Zikr Counter",
+    "a11y": {
+      "goalReached": "Daily goal reached"
+    }
   }
 }

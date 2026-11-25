@@ -1,8 +1,11 @@
 import * as Haptics from 'expo-haptics';
 
+import { PREF_KEYS, prefStore } from '@/lib/prefs';
+
 // Haptic vocabulary (docs/06-UI-DESIGN.md section 7). One place, so the vibration preference can
-// switch every call off. The web pref `bustandeen_vibration` is wired in P2-07/P2-14; until then it
-// is on. Failures are swallowed: a missing motor must never break a tap.
+// switch every call off. The web pref `bustandeen_vibration` (`'0'` = off) is read once at start; a
+// setting to change it comes with the settings screen (P2-14/P2-17). Failures are swallowed: a missing
+// motor must never break a tap.
 
 export type HapticKind =
   /** A light tick: a zikr count, a button press. */
@@ -15,7 +18,7 @@ export type HapticKind =
   | 'success'
   | 'warning';
 
-let enabled = true;
+let enabled = prefStore.getString(PREF_KEYS.vibration) !== '0';
 
 export function setHapticsEnabled(value: boolean): void {
   enabled = value;

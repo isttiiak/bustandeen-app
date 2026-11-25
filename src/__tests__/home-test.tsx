@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { useEffect as mockUseEffect } from 'react';
 
 import { digits } from '@/lib/format';
 import {
@@ -22,9 +23,19 @@ jest.mock('expo-haptics', () => ({
   ImpactFeedbackStyle: { Light: 'light', Medium: 'medium' },
   NotificationFeedbackType: { Success: 'success', Warning: 'warning' },
 }));
+const mockPush = jest.fn();
 jest.mock('expo-router', () => ({
-  useRouter: () => ({ navigate: jest.fn() }),
+  useRouter: () => ({ navigate: jest.fn(), push: mockPush }),
   useLocalSearchParams: () => ({}),
+  // Runs the focus callback once on mount, like a screen that gains focus when it first shows.
+  useFocusEffect: (effect: () => void) => mockUseEffect(effect, [effect]),
+}));
+
+// The Home zikr card reads the zikr store (local database). Tests set its numbers directly.
+const mockZikr = { todayTotal: 0, streak: 0 };
+jest.mock('@/features/zikr/store', () => ({
+  useZikr: () => mockZikr,
+  zikrStore: () => ({ refreshDay: () => false }),
 }));
 
 const at = (h: number, m = 0, s = 0) => new Date(2026, 10, 19, h, m, s);
@@ -162,13 +173,32 @@ describe('Home screen', () => {
     expect(screen.queryByText('Suhoor ends')).toBeNull();
   });
 
-  it('counter cards: count, else streak, else the word', async () => {
+  it('zikr card: today, else the streak, else the word (real zikr data)', async () => {
+    Object.assign(mockZikr, { todayTotal: 54, streak: 9 });
+    const { unmount } = await renderHome();
+    expect(screen.getByText('54')).toBeOnTheScreen();
+    expect(screen.queryByText('9')).toBeNull();
+    await unmount();
+
+    Object.assign(mockZikr, { todayTotal: 0, streak: 9 });
+    const second = await renderHome();
+    expect(screen.getByText('9')).toBeOnTheScreen();
+    await second.unmount();
+
+    Object.assign(mockZikr, { todayTotal: 0, streak: 0 });
     await renderHome();
-    expect(screen.getByText('33')).toBeOnTheScreen(); // zikr count today
-    expect(screen.getByText('day streak')).toBeOnTheScreen(); // quran streak 4
-    await act(async () => setProto({ active: false }));
-    expect(screen.queryByText('33')).toBeNull();
     expect(screen.getAllByText('Zikr').length).toBeGreaterThan(1); // card title + the word
+  });
+
+  it('opens the zikr counter from the card', async () => {
+    await renderHome();
+    fireEvent.press(screen.getByRole('button', { name: 'Open Zikr' }));
+    expect(mockPush).toHaveBeenCalledWith('/zikr');
+  });
+
+  it('other counter cards still follow the same rule on sample data', async () => {
+    await renderHome();
+    expect(screen.getAllByText('day streak').length).toBeGreaterThan(0); // quran streak 4
   });
 
   it('layout B ticks a prayer from the hero and updates the tracker ring', async () => {

@@ -1,12 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import { Button } from '@/ui/Button';
-import { haptic } from '@/ui/haptics';
 import { Text } from '@/ui/Text';
 import { Card } from '@/ui/Card';
 import { Sheet } from '@/ui/Overlays';
-import { PressableScale } from '@/ui/PressableScale';
 
 import { PrayerRow } from './PrayerRow';
 import { PRAYER_KEY, SAMPLE_DAY, formatClock, type PrayerId } from '../schedule';
@@ -92,51 +89,6 @@ export function TrackerSheet({
           </View>
         ))}
       </Card>
-    </Sheet>
-  );
-}
-
-export function ZikrSheet({
-  visible,
-  onClose,
-  num,
-  count,
-  setCount,
-}: {
-  visible: boolean;
-  onClose: () => void;
-  num: (v: string | number) => string;
-  count: number;
-  setCount: (n: number) => void;
-}) {
-  const { t } = useTranslation();
-  return (
-    <Sheet
-      visible={visible}
-      onClose={onClose}
-      title={t('home.quick.zikr')}
-      closeLabel={t('app.closeSheet')}
-    >
-      <View className="items-center gap-4 pb-2">
-        <PressableScale
-          onPress={() => {
-            const next = count + 1;
-            setCount(next);
-            haptic(next % 33 === 0 ? 'success' : 'tick');
-          }}
-          accessibilityRole="button"
-          accessibilityLabel={`${t('app.tapToCount')}: ${num(count)}`}
-          className="h-52 w-52 items-center justify-center rounded-full border-2 border-gold bg-hero"
-        >
-          <Text variant="display" tone="hero" tabular style={{ fontSize: 56, lineHeight: 64 }}>
-            {num(count)}
-          </Text>
-          <Text variant="small" tone="hero" className="opacity-70">
-            {t('app.tapToCount')}
-          </Text>
-        </PressableScale>
-        <Button label={t('common.reset')} variant="secondary" onPress={() => setCount(0)} />
-      </View>
     </Sheet>
   );
 }

@@ -2,7 +2,8 @@ import { drizzle } from 'drizzle-orm/sqlite-proxy';
 import { migrate } from 'drizzle-orm/sqlite-proxy/migrator';
 import { DatabaseSync } from 'node:sqlite';
 import { join } from 'node:path';
-import { readFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 
 import { journal, migrations } from '@/db/migrations';
 
@@ -47,7 +48,9 @@ const tables = (sqlite: DatabaseSync) =>
     .map((r) => r.name)
     .sort();
 
-describe('migration 0001', () => {
+const ALL_TABLES = ['meta', 'outbox', 'query_cache', 'zikr_day', 'zikr_unsent'];
+
+describe('migrations (0000_init, 0001_zikr)', () => {
   it('bundles exactly the SQL files drizzle-kit wrote', () => {
     for (const e of journal.entries) {
       const key = `m${String(e.idx).padStart(4, '0')}` as keyof typeof migrations;
@@ -58,7 +61,7 @@ describe('migration 0001', () => {
   it('builds the schema from an empty database', async () => {
     const { sqlite, db, run } = open();
     await migrate(db, run, { migrationsFolder: FOLDER });
-    expect(tables(sqlite)).toEqual(['meta', 'outbox', 'query_cache']);
+    expect(tables(sqlite)).toEqual(ALL_TABLES);
     const cols = (sqlite.prepare('PRAGMA table_info(outbox)').all() as { name: string }[]).map(
       (c) => c.name
     );
@@ -67,7 +70,7 @@ describe('migration 0001', () => {
     );
   });
 
-  it('is idempotent and keeps outbox rows when run again on a 0001 database', async () => {
+  it('is idempotent and keeps outbox rows when run again on a migrated database', async () => {
     const { sqlite, db, run } = open();
     await migrate(db, run, { migrationsFolder: FOLDER });
     sqlite
@@ -77,12 +80,42 @@ describe('migration 0001', () => {
       .run();
     await migrate(db, run, { migrationsFolder: FOLDER });
     await migrate(db, run, { migrationsFolder: FOLDER });
-    expect(tables(sqlite)).toEqual(['meta', 'outbox', 'query_cache']);
+    expect(tables(sqlite)).toEqual(ALL_TABLES);
     const row = sqlite.prepare('SELECT id, attempts, state FROM outbox').all();
     expect(row).toEqual([expect.objectContaining({ id: 'op-1', attempts: 0, state: 'pending' })]);
     const applied = sqlite.prepare('SELECT count(*) AS n FROM __drizzle_migrations').get() as {
       n: number;
     };
     expect(applied.n).toBe(journal.entries.length);
+  });
+
+  it('upgrades a 0000_init database to 0001_zikr without touching outbox rows', async () => {
+    // A folder holding only the first migration plays the database of the previous app version.
+    const old = mkdtempSync(join(tmpdir(), 'mig-'));
+    try {
+      mkdirSync(join(old, 'meta'));
+      const first = journal.entries[0]!;
+      copyFileSync(join(FOLDER, `${first.tag}.sql`), join(old, `${first.tag}.sql`));
+      writeFileSync(
+        join(old, 'meta/_journal.json'),
+        JSON.stringify({ ...journal, entries: [first] })
+      );
+      const { sqlite, db, run } = open();
+      await migrate(db, run, { migrationsFolder: old });
+      expect(tables(sqlite)).toEqual(['meta', 'outbox', 'query_cache']);
+      sqlite
+        .prepare(
+          "INSERT INTO outbox (id, owner_uid, domain, method, path, body, created_at, state) VALUES ('op-9','u1','zikr','POST','/api/zikr/increment/batch','{}',1,'pending')"
+        )
+        .run();
+
+      await migrate(db, run, { migrationsFolder: FOLDER });
+      expect(tables(sqlite)).toEqual(ALL_TABLES);
+      expect(sqlite.prepare('SELECT id, state FROM outbox').all()).toEqual([
+        expect.objectContaining({ id: 'op-9', state: 'pending' }),
+      ]);
+    } finally {
+      rmSync(old, { recursive: true, force: true });
+    }
   });
 });

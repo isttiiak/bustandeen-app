@@ -118,7 +118,8 @@ export function ProgressRing({
           r={r}
           stroke={theme.color(color)}
           strokeWidth={stroke}
-          strokeLinecap="round"
+          // A round cap on an empty arc draws a dot at the top; no cap until there is progress.
+          strokeLinecap={clamped > 0 ? 'round' : 'butt'}
           fill="none"
           strokeDasharray={circumference}
           animatedProps={animatedProps}

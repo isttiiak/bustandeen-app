@@ -9,6 +9,29 @@ The app is not released: these are development milestones, not builds for users.
 
 ## [Unreleased]
 
+## [1.0.0-alpha.3] - 2026-11-25
+
+Core version shipped: none yet.
+
+### Added
+
+- Zikr counter, local and offline: the web's four starting zikr (text copied from the website), tap to
+  count, undo, reset with a confirm, an optional target (33, 34, 99, 100 or custom) that counts down and
+  marks a completed set, the daily goal moment at 100, haptics and motion for every action (reduce motion
+  respected). Opens from the Home Zikr card, which now shows today's real count, else the streak, else
+  the word (D18).
+- Encrypted database migration `0001_zikr` (`zikr_day`, `zikr_unsent`), forward-only; outbox rows kept.
+
+### Changed
+
+- The vibration preference (`bustandeen_vibration`) is read at start.
+- `ProgressRing` draws no dot when it is empty.
+
+### Known gaps
+
+- "Today" is the phone's calendar date until `@bustandeen/core` is synced; the streak is computed on the
+  device until zikr sync exists. No sync, custom zikr, Log counts or zikr analytics yet.
+
 ## [1.0.0-alpha.2] - 2026-11-20
 
 Core version shipped: none yet.
