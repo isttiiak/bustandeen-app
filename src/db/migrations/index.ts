@@ -11,12 +11,20 @@ export const journal = {
       "when": 1795119886534,
       "tag": "0000_init",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1795613956938,
+      "tag": "0001_zikr",
+      "breakpoints": true
     }
   ]
 };
 
 export const migrations = {
   m0000: "CREATE TABLE `meta` (\n\t`key` text PRIMARY KEY NOT NULL,\n\t`value` text NOT NULL\n);\n--> statement-breakpoint\nCREATE TABLE `outbox` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`owner_uid` text NOT NULL,\n\t`domain` text NOT NULL,\n\t`method` text NOT NULL,\n\t`path` text NOT NULL,\n\t`body` text NOT NULL,\n\t`tracking_day` text,\n\t`created_at` integer NOT NULL,\n\t`attempts` integer DEFAULT 0 NOT NULL,\n\t`next_attempt_at` integer,\n\t`state` text NOT NULL,\n\t`last_error` text\n);\n--> statement-breakpoint\nCREATE INDEX `outbox_owner_state_idx` ON `outbox` (`owner_uid`,`state`,`created_at`);--> statement-breakpoint\nCREATE TABLE `query_cache` (\n\t`owner_uid` text NOT NULL,\n\t`key` text NOT NULL,\n\t`data` text NOT NULL,\n\t`updated_at` integer NOT NULL,\n\tPRIMARY KEY(`owner_uid`, `key`)\n);\n",
+  m0001: "CREATE TABLE `zikr_day` (\n\t`owner_uid` text NOT NULL,\n\t`day` text NOT NULL,\n\t`zikr_type` text NOT NULL,\n\t`count` integer DEFAULT 0 NOT NULL,\n\t`shown` integer DEFAULT 0 NOT NULL,\n\t`updated_at` integer NOT NULL,\n\tPRIMARY KEY(`owner_uid`, `day`, `zikr_type`)\n);\n--> statement-breakpoint\nCREATE TABLE `zikr_unsent` (\n\t`owner_uid` text NOT NULL,\n\t`day` text NOT NULL,\n\t`zikr_type` text NOT NULL,\n\t`amount` integer DEFAULT 0 NOT NULL,\n\t`untimed_amount` integer DEFAULT 0 NOT NULL,\n\t`first_ts` integer,\n\t`last_ts` integer,\n\tPRIMARY KEY(`owner_uid`, `day`, `zikr_type`)\n);\n",
 };
 
 export default { journal, migrations };
