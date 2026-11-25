@@ -1,18 +1,27 @@
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import { setProto, useProto, type HeroFrameKind, type HomeLayout } from '@/features/home/proto';
+import { GoalSheet } from '@/features/zikr/components/GoalSheet';
+import { useZikr, zikrStore } from '@/features/zikr/store';
+import { digits } from '@/lib/format';
+import { REDUCE_MOTION_MODES, uiPrefs, useUiPrefs, type ReduceMotionMode } from '@/lib/uiPrefs';
 import { setThemeMode, useThemeMode } from '@/theme/ThemeProvider';
 import type { ThemeMode } from '@/theme/resolve';
 import { color, type ThemeName } from '@/theme/tokens';
 import { Icon } from '@/ui/Icon';
-import { Chip, Segmented } from '@/ui/Inputs';
-import { PressableScale } from '@/ui/PressableScale';
+import { Segmented, Switch } from '@/ui/Inputs';
 import { SectionTitle } from '@/ui/Layout';
+import { PressableScale } from '@/ui/PressableScale';
 import { Screen } from '@/ui/Screen';
 import { Text } from '@/ui/Text';
 
+import { DesignReview } from '../components/DesignReview';
 import { setLang, useLang } from '../langStore';
-import { useTranslation } from 'react-i18next';
+
+// Settings (task P2-17a): appearance, language, the zikr goal and accessibility. Everything is saved on
+// the phone under the web's keys where the web has one; P2-14 syncs them. Prototype review switches
+// follow in dev builds only.
 
 // Mini preview of each theme (prototype): page, card and accent, read from the tokens.
 function Swatch({ theme }: { theme: ThemeName }) {
@@ -41,23 +50,13 @@ const PREVIEW: Partial<Record<ThemeMode, ThemeName>> = {
   sand: 'sand',
 };
 
-// Pretend times that land in each hero state (sample schedule in features/home/schedule.ts).
-const TIMES: readonly [string, number][] = [
-  ['04:30 before Fajr', 4 * 60 + 30],
-  ['06:25 forbidden', 6 * 60 + 25],
-  ['09:00 between', 9 * 60],
-  ['11:48 forbidden', 11 * 60 + 48],
-  ['13:00 Dhuhr', 13 * 60],
-  ['16:00 Asr', 16 * 60],
-  ['17:15 forbidden', 17 * 60 + 15],
-  ['18:00 Maghrib', 18 * 60],
-  ['21:00 Isha', 21 * 60],
-];
-
 export function MoreScreen() {
   const lang = useLang();
   const mode = useThemeMode();
-  const proto = useProto();
+  const prefs = useUiPrefs();
+  const zikr = useZikr();
+  const [goalOpen, setGoalOpen] = useState(false);
+  const num = (n: number) => digits(n, lang);
   const { t } = useTranslation();
   const modes: { value: ThemeMode; label: string }[] = [
     { value: 'dark', label: t('settings.themeDark') },
@@ -72,6 +71,9 @@ export function MoreScreen() {
     <Screen scroll>
       <Text variant="h1">{t('app.moreTitle')}</Text>
       <SectionTitle icon="moon">{t('settings.appearanceSection')}</SectionTitle>
+      <Text variant="small" tone="muted">
+        {t('app.settings.appearanceNote')}
+      </Text>
       <View className="flex-row flex-wrap gap-3">
         {modes.map((m) => {
           const preview = PREVIEW[m.value];
@@ -103,25 +105,7 @@ export function MoreScreen() {
           );
         })}
       </View>
-      <SectionTitle>{t('proto.protoFrame')}</SectionTitle>
-      <Segmented
-        options={[
-          { value: 'arch', label: t('proto.frameArch') },
-          { value: 'plain', label: t('proto.framePlain') },
-        ]}
-        value={proto.frame}
-        onChange={(v: HeroFrameKind) => setProto({ frame: v })}
-      />
-      <SectionTitle>{t('proto.protoRow')}</SectionTitle>
-      <Segmented
-        options={[
-          { value: 'show', label: t('proto.rowShow') },
-          { value: 'hide', label: t('proto.rowHide') },
-        ]}
-        value={proto.prayerRow ? 'show' : 'hide'}
-        onChange={(v: string) => setProto({ prayerRow: v === 'show' })}
-      />
-      <SectionTitle>{t('settings.language')}</SectionTitle>
+      <SectionTitle icon="book">{t('settings.language')}</SectionTitle>
       <Segmented
         options={[
           { value: 'en', label: 'English' },
@@ -130,52 +114,102 @@ export function MoreScreen() {
         value={lang}
         onChange={setLang}
       />
-      <SectionTitle>{t('proto.protoLayout')}</SectionTitle>
-      <Segmented
-        options={[
-          { value: 'a', label: t('proto.layoutA') },
-          { value: 'b', label: t('proto.layoutB') },
-        ]}
-        value={proto.layout}
-        onChange={(v: HomeLayout) => setProto({ layout: v })}
+
+      <SectionTitle icon="counter">{t('home.quick.zikr')}</SectionTitle>
+      <ValueRow
+        title={t('zikrAnalytics.dailyTarget')}
+        detail={t('app.settings.goalDetail')}
+        value={num(zikr.goal.dailyTarget)}
+        onPress={() => setGoalOpen(true)}
+        testID="settings-goal"
       />
-      <SectionTitle>{t('proto.protoTime')}</SectionTitle>
-      <View className="flex-row flex-wrap gap-2">
-        <Chip
-          label={t('proto.protoLive')}
-          selected={proto.simMinutes == null}
-          onPress={() => setProto({ simMinutes: null })}
+      <ValueRow
+        title={t('zikrAnalytics.graceDays')}
+        value={num(zikr.goal.graceDays)}
+        onPress={() => setGoalOpen(true)}
+      />
+
+      <SectionTitle icon="info">{t('settings.accessibilitySection')}</SectionTitle>
+      <View className="min-h-12 flex-row items-center gap-3 rounded-control border border-border bg-surface/50 p-3">
+        <View className="flex-1">
+          <Text weight="semibold">{t('settings.vibration')}</Text>
+          <Text variant="small" tone="muted">
+            {t('app.settings.vibrationDetail')}
+          </Text>
+        </View>
+        <Switch
+          value={prefs.vibration}
+          onValueChange={(v) => uiPrefs.setVibration(v)}
+          label={t('settings.vibration')}
+          testID="settings-vibration"
         />
-        {TIMES.map(([label, minutes]) => (
-          <Chip
-            key={label}
-            label={label}
-            selected={proto.simMinutes === minutes}
-            onPress={() => setProto({ simMinutes: minutes })}
-          />
-        ))}
       </View>
-      <SectionTitle>{t('proto.protoFasting')}</SectionTitle>
-      <Segmented
-        options={[
-          { value: 'on', label: t('proto.protoOn') },
-          { value: 'off', label: t('proto.protoOff') },
-        ]}
-        value={proto.fasting ? 'on' : 'off'}
-        onChange={(v: string) => setProto({ fasting: v === 'on' })}
+      <View className="gap-2 rounded-control border border-border bg-surface/50 p-3">
+        <Text weight="semibold">{t('settings.reduceMotion')}</Text>
+        <Text variant="small" tone="muted">
+          {t('settings.reduceMotionDetail')}
+        </Text>
+        <Segmented
+          options={REDUCE_MOTION_MODES.map((m) => ({
+            value: m,
+            label: t(`settings.reduceMotion${m[0]!.toUpperCase()}${m.slice(1)}`),
+          }))}
+          value={prefs.reduceMotion}
+          onChange={(v: ReduceMotionMode) => uiPrefs.setReduceMotion(v)}
+        />
+      </View>
+
+      {__DEV__ ? <DesignReview /> : null}
+
+      {/* A new key each time it opens, so the sheet starts from the saved goal. */}
+      <GoalSheet
+        key={goalOpen ? 'open' : 'closed'}
+        visible={goalOpen}
+        onClose={() => setGoalOpen(false)}
+        lang={lang}
+        goal={zikr.goal}
+        onSave={(g) => zikrStore().setGoal(g)}
       />
-      <SectionTitle>{t('proto.protoData')}</SectionTitle>
-      <Segmented
-        options={[
-          { value: 'active', label: t('proto.protoActive') },
-          { value: 'empty', label: t('proto.protoEmpty') },
-        ]}
-        value={proto.active ? 'active' : 'empty'}
-        onChange={(v: string) => setProto({ active: v === 'active' })}
-      />
-      <Text variant="caption" tone="faint" className="text-center">
-        {t('proto.prototype')}
-      </Text>
     </Screen>
+  );
+}
+
+/** A setting that opens a sheet: title, optional detail, the current value and a chevron. */
+function ValueRow({
+  title,
+  detail,
+  value,
+  onPress,
+  testID,
+}: {
+  title: string;
+  detail?: string;
+  value: string;
+  onPress: () => void;
+  testID?: string;
+}) {
+  return (
+    <PressableScale
+      haptic="select"
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${title}: ${value}`}
+      accessibilityHint={detail}
+      testID={testID}
+      className="min-h-12 flex-row items-center gap-3 rounded-control border border-border bg-surface/50 p-3"
+    >
+      <View className="flex-1">
+        <Text weight="semibold">{title}</Text>
+        {detail ? (
+          <Text variant="small" tone="muted">
+            {detail}
+          </Text>
+        ) : null}
+      </View>
+      <Text variant="lead" weight="bold" tabular>
+        {value}
+      </Text>
+      <Icon name="chevron-end" size={18} color="gold-dim" mirrorInRtl />
+    </PressableScale>
   );
 }

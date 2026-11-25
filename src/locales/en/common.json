@@ -64,6 +64,13 @@
       "useCustom": "Use",
       "storageError": "Counts can't be saved on this phone right now.",
       "tapHint": "Tap anywhere here to count"
+    },
+    "settings": {
+      "appearanceNote": "Choose how Bustandeen looks.",
+      "vibrationDetail": "A gentle pulse when you count and act in the app.",
+      "goalDetail": "Used for your streak and today's goal moment.",
+      "goalRange": "From 1 to 100000",
+      "designReview": "Design review (dev builds only)"
     }
   },
   "home": {
@@ -89,7 +96,14 @@
     "appearanceSection": "Appearance",
     "language": "Language",
     "themeDark": "Dark",
-    "themeLight": "Light"
+    "themeLight": "Light",
+    "accessibilitySection": "Accessibility",
+    "vibration": "Vibration feedback",
+    "reduceMotion": "Reduce animations",
+    "reduceMotionDetail": "Tone down motion effects and celebrations. Auto follows your phone's setting.",
+    "reduceMotionAuto": "Auto",
+    "reduceMotionOn": "On",
+    "reduceMotionOff": "Off"
   },
   "proto": {
     "prototype": "Design prototype: sample data, nothing is saved",
@@ -131,5 +145,17 @@
     "a11y": {
       "goalReached": "Daily goal reached"
     }
+  },
+  "zikrAnalytics": {
+    "setDailyGoal": "Set Daily Goal",
+    "dailyTarget": "Daily target",
+    "enterGoal": "Enter your daily goal",
+    "graceDays": "Grace days",
+    "grace0": "0: any missed day resets the streak",
+    "grace1": "1 day (default)",
+    "grace2": "2 days",
+    "grace3": "3 days",
+    "graceDaysNote": "How many consecutive missed days your streak forgives before resetting.",
+    "saveGoal": "Save Goal"
   }
 }

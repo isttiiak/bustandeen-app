@@ -20,7 +20,7 @@ import { Text } from '@/ui/Text';
 import { CounterDial, type DialBeat } from '../components/CounterDial';
 import { TargetSheet } from '../components/TargetSheet';
 import { BUILT_IN_ZIKR, findZikr, zikrName } from '../content';
-import { DEFAULT_DAILY_GOAL } from '../logic/streak';
+import { reachesGoal } from '../logic/goal';
 import { completesSet, isMilestone, setProgress } from '../logic/target';
 import { countsOf, useZikr, zikrStore } from '../store';
 
@@ -65,13 +65,13 @@ export function ZikrCounterScreen() {
 
   // Haptics (doc 06 section 7): a light tick per count, medium at every 33 without a target and on
   // reset, a selection click on undo, success when a set completes and when today's total first reaches
-  // the daily goal (the web celebrates the same moment). Nothing for "nothing to undo".
+  // the daily goal set in Settings (the web celebrates the same moment). Nothing for "nothing to undo".
   const onCount = () => {
     const before = snap.todayTotal;
     const after = store.increment();
     if (after === null) return;
     const setDone = snap.targetOn && completesSet(after, start, snap.target);
-    const goalReached = before < DEFAULT_DAILY_GOAL && before + 1 >= DEFAULT_DAILY_GOAL;
+    const goalReached = reachesGoal(before, before + 1, snap.goal.dailyTarget);
     if (setDone) {
       // CompletionCheck plays the success haptic itself.
       setSetStart(after);
