@@ -77,6 +77,15 @@
       "goalDetail": "Used for your streak and today's goal moment.",
       "goalRange": "From 1 to 100000",
       "designReview": "Design review (dev builds only)"
+    },
+    "events": {
+      "calendarButton": "Open calendar",
+      "none": "No special day today",
+      "year": "This year",
+      "month": "Month {{n}} of 12",
+      "sample": "Sample",
+      "choosePlace": "Choose location",
+      "outside": "No sample dates for this day."
     }
   },
   "home": {
@@ -190,5 +199,28 @@
     "body": "An unexpected error interrupted the app. Your worship data is safe. Try reloading.",
     "reload": "Reload",
     "home": "Go to Home"
+  },
+  "calendar": {
+    "today": "Today",
+    "settings": "Calendar settings",
+    "comingUp": "Coming up",
+    "nothingSoon": "Nothing in the next 30 days",
+    "heroUq": "Umm al-Qura calendar",
+    "changesLabel": "Date changes",
+    "changesNoPlace": "at midnight here. Save your location to change it at Maghrib.",
+    "nightNote": "The night begins at Maghrib on {{eve}}.",
+    "moonNote": "Dates that depend on the moon may differ by a day; follow your local announcement.",
+    "moonDependent": "depends on the moon",
+    "holidayKind": {
+      "general": "general holiday",
+      "executive": "executive order"
+    },
+    "kind": {
+      "islamic": "Islamic day",
+      "holiday": "Government holiday",
+      "national": "National day"
+    },
+    "tomorrow": "tomorrow",
+    "inDays": "in {{n}} days"
   }
 }

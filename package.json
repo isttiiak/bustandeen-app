@@ -69,7 +69,8 @@
     "db:generate": "drizzle-kit generate && node scripts/build-migrations.mjs",
     "db:check": "node scripts/build-migrations.mjs --check",
     "i18n:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-i18n.mjs",
-    "zikr:content": "node --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/gen-zikr-content.mjs"
+    "zikr:content": "node --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/gen-zikr-content.mjs",
+    "events:content": "node --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/gen-events-content.mjs"
   },
   "private": true,
   "jest": {
