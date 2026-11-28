@@ -1,0 +1,172 @@
+// Regenerates src/features/events/content/{data,sampleDays}.ts from the website's own calendar modules, so the
+// app holds no hand-typed special days and re-implements no Hijri, Bengali or special-day rule (CLAUDE.md
+// rules 1, 3 and 4). Reads the web repo (read-only) at a git ref through `git show` and runs its code with
+// Node's type stripping.
+// Usage: npm run events:content [-- <web-ref>]   (default ref: main; web repo at ../bustandeen)
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
+const ref = process.argv[2] ?? 'main';
+const web = process.env.BUSTANDEEN_WEB ?? '../bustandeen';
+const SRC = 'frontend/src';
+const git = (...args) => execFileSync('git', ['-C', web, ...args], { encoding: 'utf8' });
+const show = (path) => git('show', `${ref}:${SRC}/${path}`);
+const commit = git('rev-parse', '--short', ref).trim();
+
+// The sample window. TODO(core): the sample days go when @bustandeen/core is synced (EV-07).
+const FROM = '2025-01-01';
+const TO = '2028-12-31';
+
+const MODULES = [
+  'utils/hijriOffset',
+  'utils/bengaliCalendar',
+  'utils/specialDayRules',
+  'utils/calendarMonth',
+  'utils/calendarEvents',
+  'data/calendar/bd',
+  'data/calendar/nationalDays',
+];
+
+const dir = mkdtempSync(join(tmpdir(), 'events-content-'));
+try {
+  // All modules side by side, so their relative imports are pointed at the flat folder.
+  for (const m of MODULES) {
+    const flat = show(`${m}.ts`).replace(
+      /from '\.{1,2}\/(?:[\w/]+\/)?(\w+)\.js'/g,
+      "from './$1.ts'"
+    );
+    writeFileSync(join(dir, `${m.split('/').pop()}.ts`), flat);
+  }
+  const load = (name) => import(join(dir, `${name}.ts`));
+  const { calendarDays } = await load('calendarMonth');
+  const { dayEvents, upcomingEvents } = await load('calendarEvents');
+  const { addDays } = await load('hijriOffset');
+  const { BENGALI_MONTHS } = await load('bengaliCalendar');
+  const { BD_HOLIDAY_YEARS, BD_NATIONAL_DAYS } = await load('bd');
+  const { NATIONAL_DAYS } = await load('nationalDays');
+
+  // SPECIAL_DAYS sits in a module full of browser imports: take the array literal alone.
+  const literal = show('utils/islamicCalendar.ts').match(
+    /export const SPECIAL_DAYS: SpecialDayInfo\[\] = (\[[\s\S]*?\n\]);/
+  );
+  if (!literal) throw new Error('SPECIAL_DAYS not found in islamicCalendar.ts');
+  writeFileSync(join(dir, 'special.ts'), `export const SPECIAL_DAYS = ${literal[1]};\n`);
+  const { SPECIAL_DAYS } = await load('special');
+
+  const arabicMonths = show('components/calendar/calendarText.ts').match(
+    /HIJRI_MONTHS_AR = (\[[\s\S]*?\]) as const/
+  );
+  if (!arabicMonths) throw new Error('HIJRI_MONTHS_AR not found in calendarText.ts');
+  writeFileSync(join(dir, 'arabic.ts'), `export const AR = ${arabicMonths[1]};\n`);
+  const { AR } = await load('arabic');
+
+  const locale = (l) => JSON.parse(show(`locales/${l}/common.json`).replace(/^﻿/, ''));
+  const en = locale('en');
+  const bn = locale('bn');
+  const pick = (get) => {
+    const pair = { en: get(en), bn: get(bn) };
+    if (!pair.en || !pair.bn) throw new Error('Missing website string');
+    return pair;
+  };
+  const months = Array.from({ length: 12 }, (_, i) => pick((d) => d.hijriMonths[String(i)]));
+
+  // Names only. Descriptions, guidance and references are left out until each is verified (owner, 2026-11-29).
+  const special = Object.fromEntries(
+    SPECIAL_DAYS.map((d) => [
+      d.id,
+      {
+        name: pick((l) => l.specialDays[d.id].name),
+        badge: pick((l) => l.specialDays.typeBadge[d.type]),
+      },
+    ])
+  );
+  const strip = ({ date, monthDay, kind, en: e, bn: b, moon }) =>
+    Object.fromEntries(
+      Object.entries({ date, monthDay, kind, en: e, bn: b, moon }).filter(
+        ([, v]) => v !== undefined
+      )
+    );
+  const holidays = { BD: BD_HOLIDAY_YEARS.flatMap((y) => y.holidays.map(strip)) };
+  const national = {
+    BD: BD_NATIONAL_DAYS.map(strip),
+    ...Object.fromEntries(Object.entries(NATIONAL_DAYS).map(([c, v]) => [c, v.days.map(strip)])),
+  };
+
+  // Plain Umm al-Qura: no country record, no own adjustment.
+  const day = calendarDays({ manual: false, userOffset: 0, country: null, records: [] });
+  const filters = {
+    country: null,
+    islamic: true,
+    holidays: false,
+    national: false,
+    fridays: true,
+    monThu: true,
+  };
+  const rows = [];
+  for (let d = FROM; d <= TO; d = addDays(d, 1)) {
+    const c = day(d);
+    const listed = new Set(upcomingEvents([c], filters).map((u) => u.event.id));
+    const ids = dayEvents(c, filters).map(
+      (e) => `${e.id}${e.night ? '~' : ''}${listed.has(e.id) ? '*' : ''}`
+    );
+    const ymd = (x) => `${x.year}-${x.month}-${x.day}`;
+    rows.push(`${ymd(c.hijri)}|${ymd(c.bengali)}|${ids.join(',')}`);
+  }
+
+  const q = (v) => JSON.stringify(v);
+  const head = `// GENERATED by scripts/gen-events-content.mjs from web ${ref} (${commit}). Do not edit by hand: change the
+// website, then run \`npm run events:content\`.`;
+  const data = `${head} Text is copied verbatim.
+// Sources (web \`${SRC}\`): locales, \`utils/islamicCalendar.ts\`, \`components/calendar/calendarText.ts\`,
+// \`data/calendar/bd.ts\`, \`data/calendar/nationalDays.ts\` (both hold the sources of their dates).
+
+export interface BiText {
+  en: string;
+  bn: string;
+}
+export interface SpecialDayName {
+  name: BiText;
+  badge: BiText;
+}
+export interface Holiday extends BiText {
+  date: string;
+  kind: 'general' | 'executive';
+  /** Depends on the moon. */
+  moon?: boolean;
+}
+export interface NationalDay extends BiText {
+  /** MM-DD, every year. */
+  monthDay: string;
+}
+
+export const HIJRI_MONTHS: readonly BiText[] = ${q(months)};
+export const HIJRI_MONTHS_AR: readonly string[] = ${q(AR)};
+export const HIJRI_ERA: BiText = ${q(pick((d) => d.hijriMonths.ah))};
+/** Always in Bangla, in either app language. */
+export const BENGALI_MONTHS: readonly string[] = ${q(BENGALI_MONTHS)};
+export const SPECIAL_DAY_NAMES = ${q(special)} satisfies Record<string, SpecialDayName>;
+export type SpecialDayId = keyof typeof SPECIAL_DAY_NAMES;
+export const HOLIDAYS: Readonly<Record<string, readonly Holiday[]>> = ${q(holidays)};
+export const NATIONAL_DAYS: Readonly<Record<string, readonly NationalDay[]>> = ${q(national)};
+`;
+  const sample = `${head}
+// SAMPLE DAYS, made by running the website's own rules on plain Umm al-Qura (no moon-sighting records, no
+// adjustment). TODO(core): delete when @bustandeen/core is synced.
+// One row per civil day from SAMPLE_FROM: Hijri y-m-d | Bengali y-m-d | special days in the web's order
+// (\`~\` a night that begins the evening before, \`*\` listed among the coming days).
+
+export const SAMPLE_FROM = '${FROM}';
+export const SAMPLE_ROWS: readonly string[] = ${q(rows)};
+`;
+  const out = 'src/features/events/content';
+  writeFileSync(`${out}/data.ts`, data);
+  writeFileSync(`${out}/sampleDays.ts`, sample);
+  execFileSync('npx', ['prettier', '--write', `${out}/data.ts`, `${out}/sampleDays.ts`], {
+    stdio: 'ignore',
+  });
+  process.stdout.write(`Wrote ${out}/data.ts and sampleDays.ts from web ${ref} (${commit}).\n`);
+} finally {
+  rmSync(dir, { recursive: true, force: true });
+}
