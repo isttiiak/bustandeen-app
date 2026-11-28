@@ -16,6 +16,9 @@ Core version shipped: none yet.
 - A calm error screen when a screen crashes ("Something went wrong", Reload, Go to Home), on every screen so
   the rest of the app stays usable, in English and Bangla. Crash reports are prepared without any personal
   data and are not sent until the app connects to the server (D21).
+- Today's tab prototype: the Hijri date with the days of its month, the English and Bengali dates, what is
+  special today, what is coming and where the year is, in English and Bangla. Names and dates come from the
+  website by script; every date is a labelled sample until the core package is synced (D23).
 
 ## [1.0.0-alpha.4] - 2026-11-26
 
